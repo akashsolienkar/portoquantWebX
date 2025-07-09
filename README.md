@@ -253,3 +253,7 @@ portoquant/
         │   └── templates/
         │       └── reports/
         │           └── portfolio-report.html
+
+## 🧠 Design Patterns Used
+
+PortoQuant applies: Domain-Driven Design (DDD), Factory, Strategy, Builder, Template Method, Adapter, Singleton, and Mapper patterns.
