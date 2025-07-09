@@ -1,0 +1,41 @@
+package com.quant.portoquant.infrastructure.historicaldata.provider;
+
+
+import com.quant.portoquant.infrastructure.historicaldata.datasources.apiclients.VintageStockClient;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+public class StockApiDataProvider implements HistoricalDataProvider {
+
+ private final VintageStockClient vintageStockClient;
+
+ @Value("${vintage.api.key}")
+ private String apiKey;
+
+ @Override
+ public List<Double> getHistoricalPrices(String symbol) {
+     Map<String, Object> response = vintageStockClient.getStockPrices(
+             "TIME_SERIES_DAILY_ADJUSTED",
+             symbol,
+             apiKey,
+             "full"
+     );
+
+     Map<String, Object> timeSeries = (Map<String, Object>)response.get("Time Series (Daily)");
+     if (timeSeries == null) {
+         throw new RuntimeException("Invalid response from Vintage API");
+     }
+
+     return timeSeries.entrySet().stream()
+             .sorted(Map.Entry.comparingByKey()) // sort by date ascending
+             .map(entry -> ((Map<String, String>) entry.getValue()).get("5. adjusted close"))
+             .map(Double::parseDouble)
+             .collect(Collectors.toList());
+ }
+}

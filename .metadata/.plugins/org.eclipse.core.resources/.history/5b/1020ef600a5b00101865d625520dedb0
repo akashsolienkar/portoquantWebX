@@ -1,0 +1,17 @@
+// === calculations/returnestimations/StockExpectedReturnCalculator.java ===
+package com.quant.portoquant.domain.calculations.returnestimations;
+
+import com.quant.portoquant.domain.analytical.ConstantExpectedReturnModel;
+import com.quant.portoquant.domain.analytical.ExpectedReturnModel;
+import com.quant.portoquant.domain.model.Asset;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class RealEstateExpectedReturnCalculator implements ExpectedReturnCalculator {
+    @Override
+    public ExpectedReturnModel calculate(Asset asset) {
+        // Dummy logic - could use historical data or analytics
+        return new ConstantExpectedReturnModel(0.08); // 8% return
+    }
+}

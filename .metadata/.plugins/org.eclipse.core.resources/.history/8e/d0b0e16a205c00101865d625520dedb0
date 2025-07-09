@@ -1,0 +1,50 @@
+package com.quant.portoquant.application.service.assembler;
+
+import com.quant.portoquant.domain.model.*;
+import com.quant.portoquant.infrastructure.reports.models.*;
+import com.quant.portoquant.infrastructure.reports.models.charts.AssetDistributionChart;
+
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+public class PortfolioReportAssembler {
+
+    public PortfolioReportData toReportData(User user, Portfolio portfolio, SimulationResult simulation, AssetDistributionChart chartData) {
+        return PortfolioReportData.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .portfolioName(portfolio.getName())
+                .totalPortfolioValue(portfolio.getTotalValuation())
+                .assets(buildAssetSummaries(portfolio.getAssets()))
+                .latestSimulation(buildSimulationSummary(simulation))
+                .pieChartData(chartData)
+                .build();
+    }
+
+    private List<AssetSummary> buildAssetSummaries(List<Asset> assets) {
+//        return assets.stream()
+//                .map(asset -> AssetSummary.builder()
+//                        .name(asset.getName())
+//                        .type(asset.getAssetType().getName())
+//                        .weight(asset.getWeight())
+//                        .value(asset.getPrice())
+//                        .build())
+//                .collect(Collectors.toList());
+    }
+
+    private SimulationSummary buildSimulationSummary(SimulationResult simulation) {
+        return SimulationSummary.builder()
+                .valueAtRisk(simulation.getValueAtRisk())
+                .expectedShortfall(simulation.getExpectedShortfall())
+                .volatilityPercent(simulation.getVolatilityPercent())
+                .bankruptcyProbability(simulation.getBankruptcyProbability())
+                .meanReturn(simulation.getMeanReturn())
+                .finalPortfolioValue(simulation.getFinalPortfolioValue())
+                .numberOfSimulations(simulation.getNumSimulations())
+                .simulationDate(simulation.getCreatedAt().toString())
+                .build();
+    }
+}

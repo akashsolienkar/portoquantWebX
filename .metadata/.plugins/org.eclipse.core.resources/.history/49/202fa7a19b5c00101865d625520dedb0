@@ -1,0 +1,9 @@
+package com.quant.portoquant.infrastructure.reports.models.charts;
+
+import java.util.List;
+import java.util.Map;
+
+public interface PieCharts
+{
+	Map<String,Number> getPlottingPoints();	
+}

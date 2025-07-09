@@ -1,0 +1,27 @@
+package com.quant.portoquant.domain.model.assets;
+
+
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.enums.AssetType;
+
+public class AssetFactory {
+
+    public static Asset createAssetFromRequest(String assetType) {
+        AssetType type = AssetType.valueOf(assetType);
+
+        Asset asset;
+        switch (type) {
+            case STOCK -> asset = new Stock();
+            case BOND -> asset = new Bond();
+            case REAL_ESTATE -> asset = new RealEstate();
+            case CASH -> asset = new Cash();
+            case MUTUAL_FUND -> asset = new MutualFund();
+            case CRYPTO -> asset = new Crypto();
+            case COMMODITY -> asset = new Commodity();
+            
+            default -> throw new IllegalArgumentException("Unsupported asset type: " + assetType);
+        }
+
+        return asset;
+    }
+}

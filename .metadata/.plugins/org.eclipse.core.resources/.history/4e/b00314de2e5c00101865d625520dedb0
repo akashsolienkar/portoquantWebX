@@ -1,0 +1,39 @@
+<!-- templates/reports/portfolio-report.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Report</title>
+</head>
+<body>
+    <h1 th:text="'Portfolio Report for ' + ${report.username}"></h1>
+    <p>Email: <span th:text="${report.email}"></span></p>
+    <p>Portfolio: <span th:text="${report.portfolioName}"></span></p>
+    <p>Total Value: <span th:text="${@formatUtils.formatDecimal(report.totalPortfolioValue)} + ' USD'"></span></p>
+
+    <h2>Assets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th><th>Type</th><th>Weight</th><th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="asset : ${report.assets}">
+                <td th:text="${asset.name}"></td>
+                <td th:text="${asset.type}"></td>
+                <td th:text="${@formatUtils.formatPercentage(asset.weight)}"></td>
+                <td th:text="${@formatUtils.formatDecimal(asset.value)}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Simulation Summary</h2>
+    <ul>
+        <li>VaR: <span th:text="${@formatUtils.formatDecimal(report.latestSimulation.valueAtRisk)} + ' USD'"></span></li>
+        <li>Expected Shortfall: <span th:text="${@formatUtils.formatDecimal(report.latestSimulation.expectedShortfall)} + ' USD'"></span></li>
+        <li>Volatility: <span th:text="${@formatUtils.formatPercentage(report.latestSimulation.volatilityPercent)}"></span></li>
+        <li>Mean Return: <span th:text="${@formatUtils.formatPercentage(report.latestSimulation.meanReturn)}"></span></li>
+    </ul>
+</body>
+</html>

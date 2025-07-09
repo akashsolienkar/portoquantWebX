@@ -1,0 +1,5 @@
+package com.quant.portoquant.domain.calculations.volatilityestimations;
+
+public interface VolatilityCalculator {
+    VolatilityModel calculate(Asset asset);
+}

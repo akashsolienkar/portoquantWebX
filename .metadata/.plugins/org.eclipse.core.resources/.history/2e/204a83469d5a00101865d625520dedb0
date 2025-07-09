@@ -1,0 +1,54 @@
+package com.quant.portoquant.api.controller;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.quant.portoquant.api.dto.SimulationResponse;
+import com.quant.portoquant.application.service.SimulationService;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/simulations")
+@RequiredArgsConstructor
+public class SimulationController {
+
+    private final SimulationService simulationService;
+
+    /**
+     * Run a new simulation for a portfolio with given number of simulations.
+     */
+    @PostMapping("/{portfolioId}/run/{numSimulations}")
+    public ResponseEntity<SimulationResponse> runSimulation(
+            @PathVariable UUID portfolioId,
+            @PathVariable int numSimulations) {
+        return ResponseEntity.ok(simulationService.runSimulation(portfolioId, numSimulations));
+    }
+
+    /**
+     * Get result of a specific simulation by simulation ID.
+     */
+    @GetMapping("/{simulationId}")
+    public ResponseEntity<SimulationResponse> getSimulationResult(@PathVariable Long simulationId) {
+        return ResponseEntity.ok(simulationService.getSimulation(simulationId));
+    }
+
+    /**
+     * List all simulations run for a given portfolio.
+     */
+    @GetMapping("/portfolio/{portfolioId}")
+    public ResponseEntity<List<SimulationResponse>> getSimulationsForPortfolio(@PathVariable UUID portfolioId) {
+        return ResponseEntity.ok(simulationService.getSimulationsForPortfolio(portfolioId));
+    }
+
+    /**
+     * Health endpoint for simulation status (optional).
+     */
+    @GetMapping("/status")
+    public ResponseEntity<String> getSimulationStatus() {
+        return ResponseEntity.ok("Simulation service is up ✅");
+    }
+}

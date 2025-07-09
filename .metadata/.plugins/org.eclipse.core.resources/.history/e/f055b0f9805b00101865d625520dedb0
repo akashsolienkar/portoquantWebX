@@ -1,0 +1,22 @@
+garch:
+  omega: 0.00001
+  alpha: 0.1
+  beta: 0.85
+
+monte-carlo-simulator:
+  steps: 257
+  confidenceLevel: 0.95
+  timeHorizon: 1.0
+
+vintage:
+  api:
+    url: https://www.alphavantage.co
+    key: demo
+
+jwt:
+  secret: your-secret-key-here
+  expiration: 86400000 # 1 day in milliseconds
+
+logging:
+  level:
+    org.springframework.web: DEBUG

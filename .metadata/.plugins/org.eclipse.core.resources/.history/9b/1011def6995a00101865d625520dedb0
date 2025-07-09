@@ -1,0 +1,25 @@
+package com.quant.portoquant.api.mapper;
+
+
+import com.quant.portoquant.domain.model.SimulationResult;
+
+
+public class SimulationMapper {
+
+    public static SimulationResponse toResponse(SimulationResult result) {
+        SimulationResponse response = new SimulationResponse();
+        response.setSimulationId(result.getId());
+        response.setPortfolioId(result.getPortfolio().getId());
+        response.setValueAtRisk(result.getValueAtRisk());
+        response.setExpectedShortfall(result.getExpectedShortfall());
+        response.setVolatilityPercent(result.getVolatilityPercent());
+        response.setBankruptcyProbability(result.getBankruptcyProbability());
+        response.setMeanReturn(result.getMeanReturn());
+        response.setFinalPortfolioValue(result.getFinalPortfolioValue());
+        response.setNumSimulations(result.getNumSimulations());
+        response.setSuccessful(result.isSuccessful());
+        response.setCreatedAt(result.getCreatedAt());
+        response.setCompletedAt(result.getCompletedAt());
+        return response;
+    }
+}

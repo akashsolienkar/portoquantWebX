@@ -1,0 +1,71 @@
+package com.quant.portoquant.application.service.impl;
+
+
+
+import com.quant.portoquant.application.service.ReportService;
+import com.quant.portoquant.application.service.assembler.PortfolioReportAssembler;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.User;
+import com.quant.portoquant.domain.model.SimulationResult;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.enums.AssetType;
+import com.quant.portoquant.infrastructure.exception.ResourceNotFoundException;
+
+import com.quant.portoquant.infrastructure.reports.models.PortfolioReportData;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+import com.quant.portoquant.infrastructure.repository.SimulationResultRepository;
+import com.quant.portoquant.infrastructure.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ReportServiceImpl implements ReportService {
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
+    private SimulationResultRepository simulationResultRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PortfolioReportAssembler assembler;
+
+    @Autowired
+    private PdfReportGenerator pdfReportGenerator;
+
+    @Override
+    public ResponseEntity<byte[]> generatePortfolioReport(UUID portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Portfolio not found"));
+
+        User user = userRepository.findById(portfolio.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        List<Asset> assets = portfolio.getAssets();
+
+        SimulationResult latestSimulation = simulationResultRepository
+                .findTopByPortfolioIdOrderByCreatedAtDesc(portfolioId)
+                .orElseThrow(() -> new ResourceNotFoundException("No simulation result found"));
+
+        // Assemble report data
+        PortfolioReportData reportData = assembler.toReportData(user, portfolio, assets, latestSimulation);
+
+        // Generate PDF
+        byte[] pdfBytes = pdfReportGenerator.generateReport(reportData);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/pdf");
+        headers.set("Content-Disposition", "inline; filename=portfolio-report.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+}

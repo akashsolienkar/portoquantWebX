@@ -1,0 +1,26 @@
+package com.quant.portoquant.api.mapper;
+
+import com.quant.portoquant.api.dto.UserRequest;
+import com.quant.portoquant.api.dto.UserResponse;
+import com.quant.portoquant.domain.model.User;
+
+public class UserMapper {
+
+    public static User toEntity(UserRequest request) {
+        return User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .role(request.getRole())
+                .build();
+    }
+
+    public static UserResponse toResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
+        return response;
+    }
+}

@@ -1,0 +1,9 @@
+package com.quant.portoquant.domain.analytical;
+
+/**
+ * Strategy interface for modeling volatility of an asset.
+ */
+@FunctionalInterface
+public interface VolatilityModel {
+    double getVolatility(double time); // annualized volatility
+}

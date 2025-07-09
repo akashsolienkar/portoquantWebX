@@ -1,0 +1,41 @@
+package com.quant.portoquant.application.service;
+
+
+import com.quant.portoquant.api.dto.PortfolioRequest;
+import com.quant.portoquant.api.dto.PortfolioResponse;
+import com.quant.portoquant.api.mapper.PortfolioMapper;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class PortfolioService {
+	
+	private final PortfolioRepository portfolioRepository;
+    private final PortfolioMapper portfolioMapper;
+    
+    PortfolioResponse createPortfolio(PortfolioRequest request)
+    {
+    	 Portfolio portfolio = portfolioMapper.toEntity(request);
+         // ⚠️ If you want to assign user here, handle that
+         Portfolio saved = portfolioRepository.save(portfolio);
+         return portfolioMapper.toResponse(saved);
+    }
+
+    List<PortfolioResponse> getAllPortfoliosForUser(Long userId)
+    {
+    	
+    }
+
+    PortfolioResponse getPortfolioById(Long id);
+
+    PortfolioResponse updatePortfolio(Long id, PortfolioRequest request);
+
+    void deletePortfolio(Long id);
+}

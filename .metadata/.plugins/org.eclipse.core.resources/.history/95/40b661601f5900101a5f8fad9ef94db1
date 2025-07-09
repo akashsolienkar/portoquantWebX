@@ -1,0 +1,18 @@
+package com.quant.portoquant.domain.analytical;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+/**
+ * Implements a constant expected return over time.
+ */
+@Data
+@AllArgsConstructor
+public class ConstantExpectedReturnModel implements ExpectedReturnModel {
+    private double expectedReturn;
+
+    @Override
+    public double getExpectedReturn(double time) {
+        return expectedReturn;
+    }
+}

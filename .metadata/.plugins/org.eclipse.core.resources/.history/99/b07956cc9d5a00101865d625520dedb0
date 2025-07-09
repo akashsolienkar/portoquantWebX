@@ -1,0 +1,42 @@
+package com.quant.portoquant.domain.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SimulationResult {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private double valueAtRisk;
+    private double expectedShortfall;
+    private double volatilityPercent;
+    private double bankruptcyProbability;
+    private double meanReturn;
+    private double finalPortfolioValue;
+
+    private int numSimulations;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime completedAt;
+
+    private boolean successful;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    private Portfolio portfolio;
+
+	public void setPortfolio(Portfolio portfolio) {
+		this.portfolio=portfolio;
+		
+	}
+}

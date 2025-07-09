@@ -1,0 +1,6 @@
+package com.quant.portoquant.domain.calculations.returnestimations;
+
+public interface ExpectedReturnCalculator {
+    ExpectedReturnModel calculate(Asset asset);
+}
+

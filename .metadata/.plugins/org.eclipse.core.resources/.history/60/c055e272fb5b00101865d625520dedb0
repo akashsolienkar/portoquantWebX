@@ -1,0 +1,21 @@
+package com.quant.portoquant.api.controller;
+
+import com.quant.portoquant.api.dto.UserLoginRequest;
+import com.quant.portoquant.api.dto.UserLoginResponse;
+import com.quant.portoquant.infrastructure.security.auth.AuthService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthService authService;
+
+    @PostMapping("/login")
+    public UserLoginResponse login(@RequestBody UserLoginRequest request) {
+        return authService.login(request);
+    }
+}

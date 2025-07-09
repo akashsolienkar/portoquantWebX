@@ -1,0 +1,37 @@
+package com.quant.portoquant.config;
+package com.quant.portoquant.config;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.dialect.SpringStandardDialect;
+import org.thymeleaf.spring6.expression.SPELVariableExpressionEvaluator;
+import org.thymeleaf.spring6.expression.SPELContextFactory;
+
+import jakarta.annotation.PostConstruct;
+
+@Configuration
+public class ThymeleafBeanResolverConfig implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    @PostConstruct
+    public void registerBeanResolver() {
+        SpringStandardDialect dialect = new SpringStandardDialect();
+        SPELVariableExpressionEvaluator evaluator = new SPELVariableExpressionEvaluator();
+        evaluator.setApplicationContext(applicationContext);
+        dialect.setVariableExpressionEvaluator(evaluator);
+        templateEngine.setDialect(dialect);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+}

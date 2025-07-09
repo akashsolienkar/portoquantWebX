@@ -1,0 +1,9 @@
+garch:
+  omega: 0.00001
+  alpha: 0.1
+  beta: 0.85
+
+montecarlosimulations:
+  steps: 257
+  confidenceLevel: 0.95
+  timeHorizon: 1.0

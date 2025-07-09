@@ -1,0 +1,5 @@
+package com.quant.portoquant.api.controller;
+
+public class HealthController {
+
+}

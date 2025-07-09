@@ -1,0 +1,49 @@
+package com.quant.portoquant.service;
+
+import com.quant.portoquant.domain.model.User;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    
+    public UserResponse registerUser(UserRequest request) {
+        User user = UserMapper.toEntity(request);
+        user.setRole(com.quant.portoquant.domain.model.enums.UserRole.USER); // default role
+        User saved = userRepository.save(user);
+        return UserMapper.toResponse(saved);
+    }
+
+    
+    public UserResponse getUserById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return UserMapper.toResponse(user);
+    }
+
+    
+    public UserResponse updateUser(UUID id, UserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword()); // future: rehash
+        return UserMapper.toResponse(userRepository.save(user));
+    }
+
+    
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        userRepository.deleteById(id);
+    }
+}

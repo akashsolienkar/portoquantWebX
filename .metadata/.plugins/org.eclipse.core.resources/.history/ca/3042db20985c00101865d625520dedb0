@@ -1,0 +1,46 @@
+package com.quant.portoquant.infrastructure.reports.generator;
+
+import com.quant.portoquant.infrastructure.reports.models.AssetSummary;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.general.DefaultPieDataset;
+import org.springframework.stereotype.Component;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Base64;
+
+@Component
+public class ChartRenderer {
+
+    public String generatePieChartBase64(List<AssetSummary> assets) {
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+
+        for (AssetSummary asset : assets) {
+            dataset.setValue(asset.getName(), asset.getValue());
+        }
+
+        JFreeChart chart = ChartFactory.createPieChart(
+                "Asset Allocation", dataset, true, true, false
+        );
+
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setSectionPaint(0, new Color(102, 204, 255));
+        plot.setSectionPaint(1, new Color(255, 153, 153));
+        plot.setSectionPaint(2, new Color(153, 255, 153));
+        plot.setBackgroundPaint(Color.white);
+
+        BufferedImage bufferedImage = chart.createBufferedImage(500, 400);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(bufferedImage, "png", baos);
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to render pie chart", e);
+        }
+    }
+}

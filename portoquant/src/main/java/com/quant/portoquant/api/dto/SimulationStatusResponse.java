@@ -1,0 +1,16 @@
+package com.quant.portoquant.api.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
+@Builder
+public class SimulationStatusResponse {
+    private Long simulationId;
+    private UUID portfolioId;
+    private String status;
+    private LocalDateTime startedAt;
+}

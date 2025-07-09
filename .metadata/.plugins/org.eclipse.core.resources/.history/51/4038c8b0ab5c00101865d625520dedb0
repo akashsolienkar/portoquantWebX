@@ -1,0 +1,21 @@
+package com.quant.portoquant.infrastructure.reports.executor;
+
+import com.quant.portoquant.infrastructure.reports.engine.PdfRendererEngine;
+import com.quant.portoquant.infrastructure.reports.models.PortfolioReportData;
+import com.quant.portoquant.infrastructure.reports.builder.ReportContextBuilder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class PortfolioReportExecutor implements ReportExecutor<PortfolioReportData> {
+
+    private final PdfRendererEngine pdfRendererEngine;
+    private final ReportContextBuilder<PortfolioReportData> contextBuilder;
+
+    @Override
+    public byte[] execute(PortfolioReportData reportData) {
+        var context = contextBuilder.buildContext(reportData);
+        return pdfRendererEngine.render("portfolio-report", context);
+    }
+}

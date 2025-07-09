@@ -1,0 +1,36 @@
+package com.quant.portoquant.infrastructure.security.auth;
+
+import com.quant.portoquant.api.dto.UserLoginRequest;
+import com.quant.portoquant.api.dto.UserLoginResponse;
+import com.quant.portoquant.domain.model.User;
+import com.quant.portoquant.infrastructure.repository.UserRepository;
+import com.quant.portoquant.infrastructure.security.jwt.JwtService;
+import com.quant.portoquant.infrastructure.security.user.AuthUserDetails;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    @Override
+    public UserLoginResponse login(UserLoginRequest request) {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String token = jwtService.generateToken(new AuthUserDetails(user));
+        return new UserLoginResponse(token);
+    }
+}

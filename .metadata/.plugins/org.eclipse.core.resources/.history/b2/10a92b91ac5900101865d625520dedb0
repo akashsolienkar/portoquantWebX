@@ -1,0 +1,43 @@
+package com.quant.portoquant.domain.calculations;
+
+import com.quant.portoquant.domain.model.SimulationResult;
+
+import java.util.Arrays;
+
+public class RiskMetricsCalculator {
+
+    /**
+     * Calculates financial risk metrics from simulated outcomes.
+     *
+     * @param outcomes        array of simulated final portfolio values
+     * @param confidenceLevel confidence level for VaR and Expected Shortfall (e.g., 0.95)
+     * @param initialValue    initial value of the portfolio
+     * @return SimulationResult containing key risk metrics
+     */
+    public static SimulationResult compute(double[] outcomes, double confidenceLevel, double initialValue) {
+        Arrays.sort(outcomes);
+
+        double mean = Arrays.stream(outcomes).average().orElse(0.0);
+
+        double stdDev = Math.sqrt(Arrays.stream(outcomes)
+                .map(x -> Math.pow(x - mean, 2))
+                .average().orElse(0.0));
+
+        int varIndex = (int) ((1 - confidenceLevel) * outcomes.length);
+        double var = outcomes[varIndex];
+
+        double expectedShortfall = Arrays.stream(outcomes)
+                .limit(varIndex)
+                .average().orElse(0.0);
+
+        long bankrupt = Arrays.stream(outcomes).filter(v -> v <= 0).count();
+        double bankruptcyProbability = (100.0 * bankrupt) / outcomes.length;
+
+        return SimulationResult.builder()
+                .var(initialValue - var)
+                .expectedShortfall(initialValue - expectedShortfall)
+                .volatility((stdDev / mean) * 100)
+                .bankruptcyProbability(bankruptcyProbability)
+                .build();
+    }
+}

@@ -1,0 +1,40 @@
+package com.example.portoquant.domain.simulation.model;
+
+import java.util.Random;
+
+import com.example.portoquant.domain.simulation.context.GBMSimulatorContext;
+import com.example.portoquant.domain.simulation.context.SimulationContext;
+import com.example.portoquant.domain.simulation.runner.SimulationRunner;
+
+/**
+ * Geometric Brownian Motion simulator implementing SimulationRunner.
+ */
+public class GBMSimulator implements SimulationRunner {
+
+    private final Random random;
+
+    public GBMSimulator() {
+        this.random = new Random();
+    }
+
+    public GBMSimulator(long seed) {
+        this.random = new Random(seed);
+    }
+
+    @Override
+    public double generate(SimulationContext context) {
+        GBMSimulatorContext ctx = (GBMSimulatorContext) context;
+
+        double value = ctx.getInitialPrice();
+        double dt = ctx.getTimeHorizon() / ctx.getSteps();
+
+        for (int i = 1; i <= ctx.getSteps(); i++) {
+            double z = random.nextGaussian();
+            double mu = ctx.getExpectedReturnModel().getValue(i);
+            double sigma = ctx.getVolatilityModel().getValue(i);
+            value *= Math.exp((mu - 0.5 * sigma * sigma) * dt + sigma * Math.sqrt(dt) * z);
+        }
+
+        return value;
+    }
+}

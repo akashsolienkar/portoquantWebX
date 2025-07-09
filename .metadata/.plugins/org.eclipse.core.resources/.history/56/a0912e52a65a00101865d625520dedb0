@@ -1,0 +1,67 @@
+package com.quant.portoquant.application.service;
+
+
+import com.quant.portoquant.api.dto.PortfolioRequest;
+import com.quant.portoquant.api.dto.PortfolioResponse;
+import com.quant.portoquant.api.mapper.PortfolioMapper;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.User;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+import com.quant.portoquant.infrastructure.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class PortfolioService {
+	
+	private final PortfolioRepository portfolioRepository;
+	private final UserRepository userRepository;
+        
+   public PortfolioResponse createPortfolio(PortfolioRequest request)
+    {
+	   Portfolio portfolio = PortfolioMapper.toEntity(request);
+       
+	User user = userRepository.findById(request.getOwnerId())
+               .orElseThrow(() -> new EntityNotFoundException("User not found"));
+       portfolio.setOwner(user);
+       return PortfolioMapper.toResponse(portfolioRepository.save(portfolio));
+    }
+
+   public List<PortfolioResponse> getAllPortfoliosForUser(UUID userId)
+    {
+	   return portfolioRepository.findAllByUserId(userId).stream()
+               .map(request->PortfolioMapper.toResponse(request))
+               .collect(Collectors.toList());
+
+    }
+
+    public PortfolioResponse getPortfolioById(UUID id)
+    {
+    	return portfolioRepository.findById(id)
+                .map(PortfolioMapper::toResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Portfolio not found"));   
+    	}
+
+    public PortfolioResponse updatePortfolio(UUID id, PortfolioRequest request)
+    {
+    	Portfolio portfolio = portfolioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Portfolio not found"));
+        portfolio.setName(request.getName());
+        portfolio.setTotalValutaion(request.getTotalValutaion());
+        return PortfolioMapper.toResponse(portfolioRepository.save(portfolio));
+    }
+
+    public void deletePortfolio(UUID id)
+    {
+    	 portfolioRepository.deleteById(id);
+    }
+}

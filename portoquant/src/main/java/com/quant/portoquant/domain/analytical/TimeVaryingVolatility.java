@@ -1,0 +1,17 @@
+package com.quant.portoquant.domain.analytical;
+
+import java.util.List;
+import lombok.AllArgsConstructor;
+
+/**
+ * Models time-varying volatility using a function.
+ */
+@AllArgsConstructor
+public class TimeVaryingVolatility implements VolatilityModel {
+    private List<Double> volatility;
+
+    @Override
+    public double getVolatility(int time) {
+        return time>=volatility.size()?volatility.get(volatility.size()): volatility.get(time);
+    }
+}

@@ -1,0 +1,79 @@
+package com.quant.portoquant.domain.simulation.executors;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.domain.calculations.RiskMetricsCalculator;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.simulation.context.GBMSimulatorContext;
+import com.quant.portoquant.domain.simulation.engine.MultiMonteCarloSimulation;
+import com.quant.portoquant.domain.simulation.model.GBMSimulator;
+import com.quant.portoquant.domain.simulation.runner.SimulationRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+/**
+ * Executes Monte Carlo simulations for each asset in a portfolio.
+ * Uses GBM model and aggregates final portfolio values.
+ *
+ * @author akashsolienkar
+ */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+@ConfigurationProperties("MonteCarloSimulator")
+public class MonteCarloSimulationExecutor {
+
+    private SimulationRunner simulationRunner = new GBMSimulator();
+    private final MultiMonteCarloSimulation engine = new MultiMonteCarloSimulation();
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+//    @Value("${simulation.steps:252}")
+    private int steps;
+
+//    @Value("${simulation.confidenceLevel:0.95}")
+    private double confidenceLevel;
+
+//    @Value("${simulation.timeHorizon:1.0}")
+    private double timeHorizon;
+
+    /**
+     * Runs simulations for the given portfolio and calculates risk metrics.
+     */
+    public void runSimulations(Portfolio portfolio, int simulations) throws InterruptedException, ExecutionException {
+        int numPaths = simulations;
+
+        List<Future<double[]>> futures = new ArrayList<>();
+
+        for (Asset asset : portfolio.getAssets()) {
+            GBMSimulatorContext context = GBMSimulatorContext.builder()
+                    .steps(steps)
+                    .initialPrice(asset.getPrice())
+                    .expectedReturnModel(asset.getExpectedReturnModel())
+                    .volatilityModel(asset.getVolatilityModel())
+                    .timeHorizon(timeHorizon)
+                    .build();
+
+            futures.add(executor.submit(() -> engine.simulate(numPaths, simulationRunner, context)));
+        }
+
+        double[] finalPortfolioValues = new double[numPaths];
+
+        for (int i = 0; i < numPaths; i++) {
+            double total = 0.0;
+            for (Future<double[]> future : futures) {
+                total += future.get()[i];
+            }
+            finalPortfolioValues[i] = total;
+        }
+
+        RiskMetricsCalculator.compute(finalPortfolioValues, portfolio.getTotalValutaion(), confidenceLevel);
+        executor.shutdown();
+    }
+}

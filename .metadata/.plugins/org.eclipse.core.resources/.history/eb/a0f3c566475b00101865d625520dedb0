@@ -1,0 +1,10 @@
+package com.quant.portoquant.infrastructure.security;
+
+
+import com.quant.portoquant.domain.model.User;
+
+public interface JwtService {
+ String generateToken(User user);
+ boolean validateToken(String token);
+ String extractUsername(String token);
+}

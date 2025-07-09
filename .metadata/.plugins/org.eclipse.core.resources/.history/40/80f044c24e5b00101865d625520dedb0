@@ -1,0 +1,28 @@
+package com.quant.portoquant.infrastructure.security;
+
+
+
+import com.quant.portoquant.domain.model.User;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class CustomUserDetailsService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + usernameOrEmail));
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword()) // Should be hashed!
+                .roles(user.getRole().name()) // Assuming your UserRole is enum (like USER, ADMIN)
+                .build();
+    }
+}

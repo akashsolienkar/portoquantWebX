@@ -1,0 +1,5 @@
+package com.quant.portoquant.infrastructure.exception;
+
+public class UserNotFoundException {
+
+}

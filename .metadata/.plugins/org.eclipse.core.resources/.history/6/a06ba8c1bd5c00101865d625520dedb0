@@ -1,0 +1,26 @@
+package com.quant.portoquant.api.controller;
+
+
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/health")
+@RequiredArgsConstructor
+public class HealthController {
+
+//    private final SimulationStatusService simulationStatusService;
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
+
+//    @GetMapping("/simulations/status")
+//    public ResponseEntity<SimulationStatusResponse> getSimulationStatus() {
+//        return ResponseEntity.ok(simulationStatusService.getCurrentStatus());
+//    }
+}

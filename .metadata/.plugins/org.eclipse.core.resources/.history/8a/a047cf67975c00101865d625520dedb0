@@ -1,0 +1,25 @@
+package com.quant.portoquant.infrastructure.reports.models.charts;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Represents pie chart data for asset distribution in the portfolio report.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AssetDistributionChart extends PieCharts<Asset> {
+ 
+	@Override
+	public Map<String, Object> getPlottingPoints(Asset data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

@@ -1,0 +1,55 @@
+package com.example.portoquant.domain.garchmodel;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "garch")
+public class GarchModel {
+
+    private double omega;
+    private double alpha;
+    private double beta;
+
+    public List<Double> runGarch(List<Double> prices) {
+        List<Double> logReturns = new ArrayList<>();
+        for (int i = 1; i < prices.size(); i++) {
+            double prev = prices.get(i - 1);
+            double curr = prices.get(i);
+            if (prev > 0 && curr > 0) {
+                logReturns.add(Math.log(curr / prev));
+            }
+        }
+        return estimateVolatility(logReturns);
+    }
+
+    private List<Double> estimateVolatility(List<Double> logReturns) {
+        List<Double> sigmaSeries = new ArrayList<>();
+        if (logReturns.size() < 2) return sigmaSeries;
+
+        double prevVariance = sampleVariance(logReturns);
+        for (int t = 1; t < logReturns.size(); t++) {
+            double shock = Math.pow(logReturns.get(t - 1), 2);
+            double variance = omega + alpha * shock + beta * prevVariance;
+            sigmaSeries.add(Math.sqrt(variance));
+            prevVariance = variance;
+        }
+        return sigmaSeries;
+    }
+
+    private double sampleVariance(List<Double> values) {
+        double mean = values.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double sumSq = 0.0;
+        for (double v : values) {
+            sumSq += Math.pow(v - mean, 2);
+        }
+        return sumSq / values.size();
+    }
+}

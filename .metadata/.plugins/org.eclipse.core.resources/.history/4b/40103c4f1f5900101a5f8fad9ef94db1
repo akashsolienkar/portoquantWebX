@@ -1,0 +1,17 @@
+package com.quant.portoquant.domain.analytical;
+
+import java.util.function.Function;
+import lombok.AllArgsConstructor;
+
+/**
+ * Uses a time-based function to dynamically compute expected return.
+ */
+@AllArgsConstructor
+public class TimeVaryingExpectedReturnModel implements ExpectedReturnModel {
+    private Function<Double, Double> returnFunction;
+
+    @Override
+    public double getExpectedReturn(double time) {
+        return returnFunction.apply(time);
+    }
+}

@@ -1,0 +1,85 @@
+package com.quant.portoquant.config;
+package com.quant.portoquant.config;
+
+import com.quant.portoquant.util.FormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.extras.springsecurity6.dialect.expression.SpringSecurityExpressionObjectFactory;
+import org.thymeleaf.extras.springsecurity6.dialect.processor.SpringSecurityExpressionObject;
+import org.thymeleaf.extras.springsecurity6.dialect.processor.SpringSecurityExpressionObjectFactory;
+import org.thymeleaf.extras.springsecurity6.dialect.processor.SpringSecurityExpressionObjectDialect;
+import org.thymeleaf.extras.springsecurity6.expression.SpringSecurityExpressionObjectFactory;
+import org.thymeleaf.extras.springsecurity6.expression.SpringSecurityExpressionObjectFactory;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+@Configuration
+public class ThymeleafConfig {
+
+    @Autowired
+    private FormatUtils formatUtils;
+
+    @Bean
+    public SpringResourceTemplateResolver templateResolver() {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setPrefix("classpath:/templates/reports/");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setCharacterEncoding("UTF-8");
+        resolver.setCacheable(false);
+        return resolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine engine = new SpringTemplateEngine();
+        engine.setTemplateResolver(templateResolver());
+        engine.addDialect(new FormatUtilsDialect(formatUtils)); // 🔥 Register your custom dialect here
+        return engine;
+    }
+
+    public static class FormatUtilsDialect extends AbstractDialect implements IExpressionObjectDialect {
+
+        private final FormatUtils formatUtils;
+
+        public FormatUtilsDialect(FormatUtils formatUtils) {
+            super("FormatUtils Dialect");
+            this.formatUtils = formatUtils;
+        }
+
+        @Override
+        public IExpressionObjectFactory getExpressionObjectFactory() {
+            return new IExpressionObjectFactory() {
+                private static final String FORMAT_UTILS_NAME = "formatUtils";
+                private final Set<String> expressionObjectNames = new HashSet<>(Collections.singletonList(FORMAT_UTILS_NAME));
+
+                @Override
+                public Set<String> getAllExpressionObjectNames() {
+                    return expressionObjectNames;
+                }
+
+                @Override
+                public Object buildObject(IExpressionContext context, String name) {
+                    return FORMAT_UTILS_NAME.equals(name) ? formatUtils : null;
+                }
+
+                @Override
+                public boolean isCacheable(String name) {
+                    return true;
+                }
+            };
+        }
+    }
+}

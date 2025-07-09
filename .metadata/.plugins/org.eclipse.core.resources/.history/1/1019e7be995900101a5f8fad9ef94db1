@@ -1,0 +1,8 @@
+package com.example.portoquant.domain.simulation.context;
+
+/**
+ * Marker interface for any simulation context (e.g., GBM, Jump Diffusion).
+ * Concrete contexts like GBMSimulatorContext will hold model-specific parameters.
+ */
+public interface SimulationContext {
+}

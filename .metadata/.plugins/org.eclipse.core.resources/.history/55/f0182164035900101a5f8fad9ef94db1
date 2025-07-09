@@ -1,0 +1,7 @@
+package com.quant.portoquant.domain.model.Assets;
+
+
+
+public class RealEstate {
+
+}

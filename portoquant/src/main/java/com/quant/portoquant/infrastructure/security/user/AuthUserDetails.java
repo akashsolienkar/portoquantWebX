@@ -1,0 +1,43 @@
+package com.quant.portoquant.infrastructure.security.user;
+
+
+import com.quant.portoquant.domain.model.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Collections;
+
+@RequiredArgsConstructor
+public class AuthUserDetails implements UserDetails {
+
+    private final User user;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Assuming `role` is an Enum
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getEmail(); // use email for login
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    // Account status flags — always true for now
+    @Override public boolean isAccountNonExpired()     { return true; }
+    @Override public boolean isAccountNonLocked()      { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled()               { return true; }
+
+    public User getUser() {
+        return user; // helpful if you want the actual domain object
+    }
+}

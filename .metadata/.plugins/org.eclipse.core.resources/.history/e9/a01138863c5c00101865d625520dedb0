@@ -1,0 +1,19 @@
+package com.quant.portoquant.infrastructure.reports.util;
+
+
+
+import org.springframework.stereotype.Component;
+
+import java.text.DecimalFormat;
+
+@Component("formatUtils")
+public class FormatUtils {
+
+    public String formatDecimal(double value) {
+        return new DecimalFormat("#,##0.00").format(value);
+    }
+
+    public String formatPercentage(double value) {
+        return new DecimalFormat("0.00%").format(value);
+    }
+}

@@ -1,0 +1,89 @@
+package com.quant.portoquant.application.service.asset;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.quant.portoquant.api.dto.AssetRequest;
+import com.quant.portoquant.api.dto.AssetResponse;
+import com.quant.portoquant.api.mapper.AssetMapper;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.assets.AssetFactory;
+import com.quant.portoquant.infrastructure.repository.AssetRepository;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AssetServiceImpl implements AssetService  {
+
+    private final AssetRepository assetRepository;
+    private final PortfolioRepository portfolioRepository;
+
+    @Transactional
+    @Override
+    public AssetResponse addAssetToPortfolio(UUID portfolioId, AssetRequest request) {
+        Portfolio portfolio = getPortfolioOrThrow(portfolioId);
+
+        System.out.println("asset returned -aaa" );
+        
+        Asset asset = AssetFactory.createAssetFromRequest(request.getType().toString());
+        AssetMapper.updateAssetFromRequest(asset, request);
+//        asset.setPortfolio(portfolio);
+       
+
+        Asset saved = assetRepository.save(asset);
+        saved.setPortfolio(portfolio);
+        portfolio.addAsset(saved);
+        return AssetMapper.toResponse(saved);
+    }
+
+    @Override
+    public List<AssetResponse> getAssetsByPortfolioId(UUID portfolioId) {
+        Portfolio portfolio = getPortfolioOrThrow(portfolioId);
+        return portfolio.getAssets().stream()
+                .map(AssetMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public AssetResponse getAssetById(UUID portfolioId, UUID assetId) {
+         getPortfolioOrThrow(portfolioId);
+        Asset asset = assetRepository.findById(assetId)
+                .filter(a -> a.getPortfolio().getId().equals(portfolioId))
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found in this portfolio"));
+
+        return AssetMapper.toResponse(asset);
+    }
+
+    public AssetResponse updateAsset(UUID portfolioId, UUID assetId, AssetRequest request) {
+        getPortfolioOrThrow(portfolioId);
+        Asset asset = assetRepository.findById(assetId)
+                .filter(a -> a.getPortfolio().getId().equals(portfolioId))
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found in this portfolio"));
+
+        AssetMapper.updateAssetFromRequest(asset, request);
+        Asset updated = assetRepository.save(asset);
+        return AssetMapper.toResponse(updated);
+    }
+
+    @Override
+    public void deleteAsset(UUID portfolioId, UUID assetId) {
+        Asset asset = assetRepository.findById(assetId)
+                .filter(a -> a.getPortfolio().getId().equals(portfolioId))
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found in this portfolio"));
+
+        assetRepository.delete(asset);
+    }
+    
+    private Portfolio getPortfolioOrThrow(UUID portfolioId) {
+        return portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new EntityNotFoundException("Portfolio not found"));
+    }
+}

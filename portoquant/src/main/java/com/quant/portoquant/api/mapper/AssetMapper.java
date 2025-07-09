@@ -1,0 +1,40 @@
+package com.quant.portoquant.api.mapper;
+
+
+
+import java.util.List;
+
+import com.quant.portoquant.api.dto.AssetRequest;
+import com.quant.portoquant.api.dto.AssetResponse;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.assets.AssetFactory;
+
+public class AssetMapper {
+
+    public static AssetResponse toResponse(Asset asset) {
+        AssetResponse response = new AssetResponse();
+        response.setId(asset.getId());
+        response.setName(asset.getName());
+        response.setTicker(asset.getTicker());
+        response.setType(asset.getType());
+        response.setAllocation(asset.getAllocation());
+        response.setPrice(asset.getPrice());
+        return response;
+    }
+
+    public static void updateAssetFromRequest(Asset asset, AssetRequest request) {
+        asset.setName(request.getName());
+        asset.setTicker(request.getTicker());
+        asset.setType(request.getType());
+        asset.setAllocation(request.getAllocation());
+        asset.setPrice(request.getPrice());
+    }
+   
+    public static Asset toAssetEntity( AssetRequest request) 
+    {
+    	Asset asset=AssetFactory.createAssetFromRequest(request.getType().toString());
+    	updateAssetFromRequest(asset,request);
+    	return asset;
+    }
+}
+    

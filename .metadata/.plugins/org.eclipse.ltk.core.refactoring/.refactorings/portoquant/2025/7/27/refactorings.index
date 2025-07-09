@@ -1,0 +1,18 @@
+1751629167180	Move 'dto' to 'api'
+1751653154874	Delete elements
+1751653163526	Delete elements
+1751654615682	Move 'assets' to 'model'
+1751657304883	Delete elements
+1751657311690	Delete element
+1751658056960	Move 'assets' to 'model'
+1751720688706	Delete element
+1751725280466	Delete elements
+1751729612925	Rename package 'com.quant.portoquant.domain.simulation.Runners'
+1751733501307	Rename resource 'returnestimations'
+1751733520430	Rename resource 'expectedreturn'
+1751733633471	Rename package 'com.quant.portoquant.domain.calculations.VolatilityCalculator'
+1751733742311	Rename package 'com.quant.portoquant.domain.calculations.volatilitycalculator'
+1751741130357	Delete element
+1751741995655	Delete elements
+1751742085030	Rename package 'com.quant.portoquant.infrastructure.provider'
+1751742140687	Move 'datasources' to 'historicaldata'

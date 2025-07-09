@@ -1,0 +1,13 @@
+package com.quant.portoquant.domain.simulation.runner;
+
+import com.quant.portoquant.domain.simulation.context.SimulationContext;
+
+/**
+ * Generic simulation runner interface to produce final simulated asset value.
+ * Can be implemented by GBM, Jump-Diffusion, etc.
+ */
+@FunctionalInterface
+public interface SimulationRunner {
+
+    double generate(SimulationContext context);
+}

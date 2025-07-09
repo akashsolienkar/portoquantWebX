@@ -1,0 +1,12 @@
+
+
+import com.quant.portoquant.domain.model.SimulationResult;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface SimulationResultRepository extends JpaRepository<SimulationResult, UUID> 
+{
+    List<SimulationResult> findByPortfolioId(UUID portfolioId);
+}

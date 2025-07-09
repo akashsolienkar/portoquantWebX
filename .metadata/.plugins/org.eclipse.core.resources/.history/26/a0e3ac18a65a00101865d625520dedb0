@@ -1,0 +1,52 @@
+package com.quant.portoquant.domain.model;
+
+import com.quant.portoquant.domain.model.enums.AssetType;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "portfolios")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Portfolio {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    private String name;
+    
+    private double totalValutaion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asset> assets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SimulationResult> simulationResults = new ArrayList<>();
+
+    public void addAsset(Asset asset) {
+        asset.setPortfolio(this);
+        this.assets.add(asset);
+    }
+
+    public void removeAsset(Asset asset) {
+        asset.setPortfolio(null);
+        this.assets.remove(asset);
+    }
+
+    public void addSimulationResult(SimulationResult result) {
+        result.setPortfolio(this);
+        this.simulationResults.add(result);
+    }
+}

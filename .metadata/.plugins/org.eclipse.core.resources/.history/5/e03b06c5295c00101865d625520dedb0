@@ -1,0 +1,45 @@
+package com.quant.portoquant.api.controller;
+
+import com.quant.portoquant.application.service.ReportService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/api/reports")
+@RequiredArgsConstructor
+public class ReportController {
+
+    private final ReportService reportService;
+
+    /**
+     * Generate and return a PDF report for a given portfolio.
+     *
+     * @param portfolioId ID of the portfolio
+     * @param response    HTTP response to write the PDF to
+     * @throws IOException if writing the PDF fails
+     */
+    @GetMapping("/portfolio/{portfolioId}")
+    public void generatePortfolioReport(@PathVariable UUID portfolioId, HttpServletResponse response) throws IOException {
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=portfolio-report.pdf");
+
+        // Delegate to service which writes directly to response's OutputStream
+        reportService.generatePortfolioPdfReport(portfolioId, response.getOutputStream());
+    }
+
+    // You can add this one later for simulation reports
+    /*
+    @GetMapping("/simulation/{simulationId}")
+    public void generateSimulationReport(@PathVariable Long simulationId, HttpServletResponse response) throws IOException {
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=simulation-report.pdf");
+
+        reportService.generateSimulationPdfReport(simulationId, response.getOutputStream());
+    }
+    */
+}

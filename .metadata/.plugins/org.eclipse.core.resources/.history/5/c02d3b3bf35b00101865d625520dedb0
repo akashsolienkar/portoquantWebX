@@ -1,0 +1,32 @@
+package com.quant.portoquant.application.service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.quant.portoquant.api.dto.PortfolioRequest;
+import com.quant.portoquant.api.dto.PortfolioResponse;
+import com.quant.portoquant.api.mapper.PortfolioMapper;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.User;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+import com.quant.portoquant.infrastructure.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
+public interface PortfolioService {
+	
+        
+   PortfolioResponse createPortfolio(PortfolioRequest request);
+  
+   List<PortfolioResponse> getAllPortfoliosForUser(UUID userId);
+  
+   PortfolioResponse getPortfolioById(UUID id);   
+
+   PortfolioResponse updatePortfolio(UUID id, PortfolioRequest request);
+
+   void deletePortfolio(UUID id);
+}

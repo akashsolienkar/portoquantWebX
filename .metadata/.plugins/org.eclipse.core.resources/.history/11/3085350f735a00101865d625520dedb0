@@ -1,0 +1,20 @@
+package com.quant.portoquant.application.service;
+
+
+import com.quant.portoquant.api.dto.PortfolioRequest;
+import com.quant.portoquant.api.dto.PortfolioResponse;
+
+import java.util.List;
+
+public interface PortfolioService {
+
+    PortfolioResponse createPortfolio(PortfolioRequest request);
+
+    List<PortfolioResponse> getAllPortfoliosForUser(Long userId);
+
+    PortfolioResponse getPortfolioById(Long id);
+
+    PortfolioResponse updatePortfolio(Long id, PortfolioRequest request);
+
+    void deletePortfolio(Long id);
+}

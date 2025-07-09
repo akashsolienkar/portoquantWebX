@@ -1,0 +1,13 @@
+package com.quant.portoquant;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PortoquantApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PortoquantApplication.class, args);
+	}
+
+}

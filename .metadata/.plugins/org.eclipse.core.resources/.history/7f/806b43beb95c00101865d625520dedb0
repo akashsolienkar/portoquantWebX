@@ -1,0 +1,22 @@
+package com.quant.portoquant.api.dto;
+
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
+public class SimulationResponse {
+    private Long simulationId;
+    private UUID portfolioId;
+    private double valueAtRisk;
+    private double expectedShortfall;
+    private double volatilityPercent;
+    private double bankruptcyProbability;
+    private double meanReturn;
+    private double finalPortfolioValue;
+    private int numSimulations;
+    private boolean successful;
+    private LocalDateTime createdAt;
+    private LocalDateTime completedAt;
+}

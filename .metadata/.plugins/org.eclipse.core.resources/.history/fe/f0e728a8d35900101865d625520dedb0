@@ -1,0 +1,20 @@
+package com.quant.portoquant.infrastructure.historicaldata.datasources.apiclients;
+
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
+
+@FeignClient(name = "vintageClient", url = "${vintage.api.url}")
+public interface VintageStockClient {
+
+ @GetMapping("/query")
+ Map<String, Object> getStockPrices(
+     @RequestParam("function") String function,
+     @RequestParam("symbol") String symbol,
+     @RequestParam("apikey") String apiKey,
+     @RequestParam("outputsize") String outputSize
+ );
+}

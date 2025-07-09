@@ -1,0 +1,78 @@
+package com.quant.portoquant.application.service;
+
+
+
+import com.quant.portoquant.api.dto.SimulationRequest;
+import com.quant.portoquant.api.dto.SimulationResponse;
+import com.quant.portoquant.api.mapper.SimulationMapper;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.SimulationResult;
+import com.quant.portoquant.domain.simulation.executors.MonteCarloSimulationExecutor;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+import com.quant.portoquant.infrastructure.repository.SimulationResultRepository;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class SimulationService {
+
+    private final PortfolioRepository portfolioRepository;
+    private final SimulationResultRepository simulationResultRepository;
+    private final MonteCarloSimulationExecutor executor;
+
+    
+    public SimulationResponse runSimulation(SimulationRequest request) {
+        UUID portfolioId = request.getPortfolioId();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Portfolio not found"));
+
+        SimulationResult result = new SimulationResult();
+        result.setPortfolio(portfolio);
+        result.setNumSimulations(request.getNumSimulations());
+        result.setCreatedAt(LocalDateTime.now());
+
+        try {
+            // Perform simulation (this will update risk metrics internally)
+            executor.runSimulations(portfolio);
+
+            // Dummy values or set them inside executor if your executor returns updated result
+            result.setFinalPortfolioValue(portfolio.getTotalValutaion()); // Or from simulation outcome
+            result.setValueAtRisk(1000.0);           // Example placeholder
+            result.setExpectedShortfall(1500.0);     // Example placeholder
+            result.setVolatilityPercent(10.5);       // Example placeholder
+            result.setBankruptcyProbability(0.03);   // Example placeholder
+            result.setMeanReturn(0.08);              // Example placeholder
+
+            result.setSuccessful(true);
+        } catch (Exception e) {
+            result.setSuccessful(false);
+            throw new RuntimeException("Simulation failed", e);
+        }
+
+        result.setCompletedAt(LocalDateTime.now());
+        SimulationResult saved = simulationResultRepository.save(result);
+        return SimulationMapper.toResponse(saved);
+    }
+
+    @Override
+    public SimulationResponse getSimulationById(Long simulationId) {
+        SimulationResult result = simulationResultRepository.findById(simulationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Simulation not found"));
+        return SimulationMapper.toResponse(result);
+    }
+
+    @Override
+    public List<SimulationResponse> getSimulationsForPortfolio(UUID portfolioId) {
+        List<SimulationResult> results = simulationResultRepository.findByPortfolioId(portfolioId);
+        return results.stream()
+                .map(SimulationMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+}

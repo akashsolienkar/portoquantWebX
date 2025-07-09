@@ -1,0 +1,19 @@
+garch:
+  omega: 0.00001
+  alpha: 0.1
+  beta: 0.85
+
+monte-carlo-simulator:
+  steps: 257
+  confidenceLevel: 0.95
+  timeHorizon: 1.0
+
+vintage:
+  api:
+    url: https://www.alphavantage.co
+    key: demo
+
+jwt:
+  secret: secret123456
+  expiration: 3600000 # 1 hour in ms
+	

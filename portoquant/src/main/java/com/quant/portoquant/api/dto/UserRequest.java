@@ -1,0 +1,13 @@
+package com.quant.portoquant.api.dto;
+
+import lombok.Data;
+import com.quant.portoquant.domain.model.enums.UserRole;
+
+
+@Data
+public class UserRequest {
+    private String username;
+    private String email;
+    private String password;
+    private UserRole role;
+}

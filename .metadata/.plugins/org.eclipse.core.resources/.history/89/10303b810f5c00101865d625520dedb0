@@ -1,0 +1,21 @@
+package com.quant.portoquant.infrastructure.reports.models.charts;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+/**
+ * Represents pie chart data for asset distribution in the portfolio report.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AssetChartData {
+    private String title; // e.g. "Asset Allocation"
+    private List<String> labels; // e.g. ["Stocks", "Bonds", "Crypto"]
+    private List<Double> values; // e.g. [50.0, 30.0, 20.0]
+}

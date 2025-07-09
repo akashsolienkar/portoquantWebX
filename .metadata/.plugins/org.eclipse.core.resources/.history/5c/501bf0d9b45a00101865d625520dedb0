@@ -1,0 +1,46 @@
+package com.quant.portoquant.api.controller;
+
+import com.quant.portoquant.api.dto.PortfolioRequest;
+import com.quant.portoquant.api.dto.PortfolioResponse;
+import com.quant.portoquant.application.service.PortfolioService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/portfolios")
+@RequiredArgsConstructor
+public class PortfolioController {
+
+    private final PortfolioService portfolioService;
+
+    @PostMapping
+    public ResponseEntity<PortfolioResponse> createPortfolio(@RequestBody PortfolioRequest request) {
+        return ResponseEntity.ok(portfolioService.createPortfolio(request));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PortfolioResponse>> getAllPortfolios(@RequestParam UUID userId) {
+        return ResponseEntity.ok(portfolioService.getAllPortfoliosForUser(userId));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PortfolioResponse> getPortfolio(@PathVariable UUID id) {
+        return ResponseEntity.ok(portfolioService.getPortfolioById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PortfolioResponse> updatePortfolio(@PathVariable UUID id, @RequestBody PortfolioRequest request) {
+        return ResponseEntity.ok(portfolioService.updatePortfolio(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePortfolio(@PathVariable UUID id) {
+        portfolioService.deletePortfolio(id);
+        return ResponseEntity.noContent().build();
+    }
+}

@@ -1,0 +1,30 @@
+package com.quant.portoquant.infrastructure.reports.executor;
+
+
+import com.quant.portoquant.infrastructure.reports.context.ReportContextBuilder;
+import com.quant.portoquant.infrastructure.reports.models.PortfolioReportData;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+@Component
+@RequiredArgsConstructor
+public class PortfolioReportExecutor implements ReportExecutor<PortfolioReportData> {
+
+//    private final PdfRendererEngine pdfRendererEngine;
+    private final ReportContextBuilder<PortfolioReportData> contextBuilder;
+
+    
+    private final SpringTemplateEngine templateEngine;
+
+
+    @Override
+    public byte[] execute(PortfolioReportData reportData) {
+        var context = contextBuilder.buildContext(reportData);
+        
+        return pdfRendererEngine.render("portfolio-report", context);
+    }
+}

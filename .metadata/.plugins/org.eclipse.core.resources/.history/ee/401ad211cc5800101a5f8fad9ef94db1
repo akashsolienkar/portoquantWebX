@@ -1,0 +1,9 @@
+package com.quant.portoquant.domain.model.Assets;
+
+
+import java.util.ArrayList;
+
+
+public class Bonds {
+
+}

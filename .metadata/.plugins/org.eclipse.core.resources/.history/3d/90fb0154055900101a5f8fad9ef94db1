@@ -1,0 +1,8 @@
+// src/main/java/com/quant/portoquant/domain/model/enums/UserRole.java
+
+package com.quant.portoquant.domain.model.enums;
+
+public enum UserRole {
+    USER,
+    ADMIN
+}

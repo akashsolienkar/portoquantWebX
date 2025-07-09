@@ -1,0 +1,11 @@
+package com.quant.portoquant.api.dto;
+
+import lombok.Data;
+import java.util.List;
+
+@Data
+public class PortfolioRequest {
+	 private UUID ownerId;
+    private String name;
+    private List<Long> assetIds; // assuming assets are added separately
+}

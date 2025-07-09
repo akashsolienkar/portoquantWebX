@@ -1,0 +1,22 @@
+package com.quant.portoquant.infrastructure.reports.models;
+
+package com.quant.portoquant.infrastructure.reports.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Simplified asset view for reports (excluding database/internal fields).
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AssetReportView {
+    private String name;
+    private String type;
+    private double weight;  // or allocationPercentage
+    private double value;   // current market value or assigned value
+}

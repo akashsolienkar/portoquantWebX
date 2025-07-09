@@ -1,0 +1,41 @@
+package com.quant.portoquant.config;
+
+package com.quant.portoquant.config;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.expression.SpringStandardDialect;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.templatemode.TemplateMode;
+
+@Configuration
+public class ThymeleafConfig {
+
+    @Bean
+    public SpringResourceTemplateResolver templateResolver() {
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setPrefix("classpath:/templates/reports/");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setCharacterEncoding("UTF-8");
+        resolver.setCacheable(false); // Disable in dev
+        return resolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine templateEngine(ApplicationContext ctx) {
+        SpringTemplateEngine engine = new SpringTemplateEngine();
+        engine.setTemplateResolver(templateResolver());
+        engine.setEnableSpringELCompiler(true);
+
+        // Make beans like @formatUtils accessible inside templates
+        SpringStandardDialect dialect = new SpringStandardDialect();
+        dialect.setVariableExpressionEvaluator(new SpelVariableExpressionEvaluator(ctx));
+        engine.setDialect(dialect);
+
+        return engine;
+    }
+}

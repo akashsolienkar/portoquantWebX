@@ -1,0 +1,30 @@
+package com.quant.portoquant.infrastructure.reports.models;
+
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import com.quant.portoquant.infrastructure.reports.models.charts.PieChart;
+
+
+/**
+ * Aggregated report data for a single portfolio report.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PortfolioReportData {
+    private String username;
+    private String email;
+    private String portfolioName;
+    private double totalPortfolioValue;
+    private List<AssetSummary> assets;
+    private SimulationSummary latestSimulation;
+    private PieChart pieChartData;
+}

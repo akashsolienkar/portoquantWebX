@@ -1,0 +1,26 @@
+package com.quant.portoquant.application.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import com.quant.portoquant.api.dto.SimulationResponse;
+import com.quant.portoquant.api.mapper.SimulationMapper;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.SimulationResult;
+import com.quant.portoquant.domain.simulation.executors.MonteCarloSimulationExecutor;
+import com.quant.portoquant.infrastructure.exception.ResourceNotFoundException;
+import com.quant.portoquant.infrastructure.repository.PortfolioRepository;
+import com.quant.portoquant.infrastructure.repository.SimulationResultRepository;
+
+public interface SimulationServiceImpl {
+		    
+	    public SimulationResponse runSimulation(UUID portofolioId, int numOfSimulations);
+
+	    public SimulationResponse getSimulationById(Long simulationId); 
+	  
+	    public List<SimulationResponse> getSimulationsForPortfolio(UUID portfolioId);
+
+
+}

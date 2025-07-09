@@ -1,0 +1,36 @@
+package com.quant.portoquant.infrastructure.reports.executor;
+
+
+import com.quant.portoquant.infrastructure.reports.context.ReportContextBuilder;
+import com.quant.portoquant.infrastructure.reports.generator.PdfReportGenerator;
+import com.quant.portoquant.infrastructure.reports.models.PortfolioReportData;
+
+import lombok.RequiredArgsConstructor;
+
+
+import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+@Component
+@RequiredArgsConstructor
+public class PortfolioReportExecutor implements ReportExecutor<PortfolioReportData> {
+
+//    private final PdfRendererEngine pdfRendererEngine;
+    private final ReportContextBuilder<PortfolioReportData> contextBuilder;
+
+    private final SpringTemplateEngine templateEngine;
+    
+    private final PdfReportGenerator pdfReportGenerator;
+
+
+    @Override
+    public byte[] execute(PortfolioReportData reportData) {
+        var context = contextBuilder.buildContext(reportData);
+        Context thymLeafContext = new Context(); 
+        thymLeafContext.setVariables(context);  
+        String renderedHtml = templateEngine.process("portfolio-report", thymLeafContext);
+        
+        return pdfReportGenerator.generateReport(renderedHtml);
+    }
+}
