@@ -13,6 +13,19 @@
 -  RESTful APIs with Swagger UI
 -  Extensible return/volatility model interfaces
 
+**Supported asset types include:**
+`Stocks`, `Bonds`, `Cash`, `Crypto`, `Commodities`, `Mutual Funds`, and `Real Estate`.
+
+**Each simulation calculates:**
+
+- **VaR:** Max loss expected under normal conditions.
+- **Expected Shortfall:** Average loss in worst-case scenarios.
+- **Volatility:** Measures portfolio risk or fluctuations.
+- **Mean Return:** Average expected portfolio gain.
+- **Bankruptcy Probability:** Chance of losing almost everything.
+- **Final Value:** Projected portfolio value at the end.
+
+And generates a final pdf report for your portfolio 
 
 
 # Tech Stack
@@ -26,8 +39,8 @@
 - **Documentation:** SpringDoc OpenAPI / Swagger
 - **UI** - CSS / HTML /Thymleaf 
 - **Security** - JWT Token based
-- **other** - lombok
-
+- **Other** - lombok
+  **Common Design Patterns** - Strategy, Factory, Builder, Template Method, Adapter, Singleton, and Mapper
 
 # Architecture - Domain Driven
 ```
