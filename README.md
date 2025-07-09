@@ -1,3 +1,4 @@
+```
 # portoquantWebx
 **PortoQuantWebX** is a Spring Boot–based simulation engine for multi-asset portfolio modeling and risk analysis using Monte Carlo and GARCH techniques. It generates dynamic performance reports in PDF or JSON format, helping investors simulate future outcomes under uncertain market conditions.
 
@@ -254,6 +255,4 @@ portoquant/
         │       └── reports/
         │           └── portfolio-report.html
 
-## 🧠 Design Patterns Used
-
-PortoQuant applies: Domain-Driven Design (DDD), Factory, Strategy, Builder, Template Method, Adapter, Singleton, and Mapper patterns.
+```
