@@ -17,6 +17,6 @@ public class CashVolatilityCalculator implements VolatilityCalculator {
     
     @Override
     public boolean support(Asset asset) {
-        return asset.getType() == AssetType.BOND; // or BOND, etc.
+        return asset.getType() == AssetType.CASH; // or BOND, etc.
     }
 }

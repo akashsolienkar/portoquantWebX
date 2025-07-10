@@ -22,7 +22,7 @@ public class AssetController {
     public ResponseEntity<AssetResponse> addAsset(
             @PathVariable UUID portfolioId,
             @RequestBody AssetRequest request) {
-//    	System.out.println("aaaaaaa");
+
         return ResponseEntity.ok(assetService.addAssetToPortfolio(portfolioId, request));
     }
 

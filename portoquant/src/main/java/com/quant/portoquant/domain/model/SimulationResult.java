@@ -23,7 +23,6 @@ public class SimulationResult {
     private double expectedShortfall;
     private double volatilityPercent;
     private double bankruptcyProbability;
-    private double meanReturn;
     private double finalPortfolioValue;
 
     private int numSimulations;

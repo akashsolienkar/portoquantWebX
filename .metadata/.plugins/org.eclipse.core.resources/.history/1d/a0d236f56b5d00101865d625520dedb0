@@ -1,0 +1,38 @@
+package com.quant.portoquant.domain.calculations.volatilityestimations;
+
+
+import com.quant.portoquant.domain.analytical.TimeVaryingVolatility;
+import com.quant.portoquant.domain.analytical.VolatilityModel;
+import com.quant.portoquant.domain.garchmodel.GarchModel;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.enums.AssetType;
+import com.quant.portoquant.infrastructure.historicaldata.provider.StockApiDataProvider;
+
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+@AllArgsConstructor
+@Component
+public class StockVolatilityCalculator implements VolatilityCalculator {
+    
+	
+	StockApiDataProvider StockApiDataProvider;
+	GarchModel garchModel;
+	
+	@Override
+    public VolatilityModel calculate(Asset asset) {
+        // Dummy logic - could use GARCH or historical stddev
+		System.out.println("heres my stock data asset"+asset.getTicker());
+		List<Double> prices=StockApiDataProvider.getHistoricalPrices(asset.getTicker());
+		System.out.println("heres my stock data 1"+prices.get(0));
+        return new TimeVaryingVolatility(garchModel.runGarch(prices)); 
+    }
+	
+	@Override
+    public boolean support(Asset asset) {
+        return asset.getType() == AssetType.STOCK; 
+    }
+}

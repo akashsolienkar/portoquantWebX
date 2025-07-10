@@ -25,13 +25,14 @@ public class StockVolatilityCalculator implements VolatilityCalculator {
 	@Override
     public VolatilityModel calculate(Asset asset) {
         // Dummy logic - could use GARCH or historical stddev
+		
 		List<Double> prices=StockApiDataProvider.getHistoricalPrices(asset.getTicker());
 		
-        return new TimeVaryingVolatility(garchModel.runGarch(prices)); // 15% volatility
+        return new TimeVaryingVolatility(garchModel.runGarch(prices)); 
     }
 	
 	@Override
     public boolean support(Asset asset) {
-        return asset.getType() == AssetType.STOCK; // or BOND, etc.
+        return asset.getType() == AssetType.STOCK; 
     }
 }

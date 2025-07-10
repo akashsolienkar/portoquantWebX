@@ -22,7 +22,6 @@ public class AssetFactory {
             default -> throw new IllegalArgumentException("Unsupported asset type: " + assetType);
         }
 
-        System.out.println("asset returned -"+ asset.getName() );
         return asset;
     }
 }

@@ -31,7 +31,7 @@ public class ModelCalculatorRegistry {
         return volatilityCalculators.stream()
                 .filter(calculator -> calculator.support(asset))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No volatility calculator found for asset."))
+                .orElseThrow(() -> new RuntimeException("No volatility calculator found for asset."+asset.getType().toString()))
                 .calculate(asset);
     }
 

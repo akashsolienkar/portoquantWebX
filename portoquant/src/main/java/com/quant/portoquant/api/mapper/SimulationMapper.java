@@ -14,8 +14,7 @@ public class SimulationMapper {
         response.setValueAtRisk(result.getValueAtRisk());
         response.setExpectedShortfall(result.getExpectedShortfall());
         response.setVolatilityPercent(result.getVolatilityPercent());
-        response.setBankruptcyProbability(result.getBankruptcyProbability());
-        response.setMeanReturn(result.getMeanReturn());
+        response.setBankruptcyProbability(result.getBankruptcyProbability());        
         response.setFinalPortfolioValue(result.getFinalPortfolioValue());
         response.setNumSimulations(result.getNumSimulations());
         response.setStatus(result.getStatus().name());

@@ -56,7 +56,7 @@ public class SimulationServiceImpl implements SimulationService{
            saved.setExpectedShortfall(s.getExpectedShortfall());     
            saved.setVolatilityPercent(s.getVolatilityPercent());     
            saved.setBankruptcyProbability(s.getBankruptcyProbability());   
-            saved.setMeanReturn(s.getMeanReturn());            
+                     
      
             saved.setStatus(SimulationStatus.SUCCESSFUL);
         } catch (Exception e)

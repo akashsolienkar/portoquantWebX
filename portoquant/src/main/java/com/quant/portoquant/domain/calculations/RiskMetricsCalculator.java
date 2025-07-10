@@ -24,7 +24,7 @@ public class RiskMetricsCalculator {
                 .average().orElse(0.0));
 
         int varIndex = (int) ((1 - confidenceLevel) * outcomes.length);
-        System.out.println("confidenceLevel"+confidenceLevel);
+       
         double var = outcomes[varIndex];
 
         double expectedShortfall = Arrays.stream(outcomes)
@@ -39,6 +39,8 @@ public class RiskMetricsCalculator {
                 .expectedShortfall(initialValue - expectedShortfall)
                 .volatilityPercent((stdDev / mean) * 100)
                 .bankruptcyProbability(bankruptcyProbability)
+                .finalPortfolioValue(mean)
                 .build();
     }
+   
 }

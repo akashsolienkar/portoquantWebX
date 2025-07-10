@@ -36,7 +36,7 @@ public class MonteCarloSimulationExecutor {
 
     private SimulationRunner simulationRunner = new GBMSimulator();
     private final MultiMonteCarloSimulation engine = new MultiMonteCarloSimulation();
-    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ExecutorService executor ;
     private final ModelCalculatorRegistry modelCalculatorRegistry;
 
     @Value("${monte-carlo-simulator.steps:252}")
@@ -51,19 +51,24 @@ public class MonteCarloSimulationExecutor {
     /**
      * Runs simulations for the given portfolio and calculates risk metrics.
      * @return 
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
     public SimulationResult runSimulations(Portfolio portfolio, int simulations) throws InterruptedException, ExecutionException {
         int numPaths = simulations;
-
+        executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        
         List<Future<double[]>> futures = new ArrayList<>();
 
+        
         for (Asset asset : portfolio.getAssets()) {
-        	
+        
             futures.add(executor.submit(() ->
             { 
+        
             	asset.setExpectedReturnModel(modelCalculatorRegistry.calculateExpectedReturn(asset));
     			asset.setVolatilityModel(modelCalculatorRegistry.calculateVolatility(asset));
-            	
+    	
                 GBMSimulatorContext context = GBMSimulatorContext.builder()
                         .steps(steps)
                         .initialPrice(asset.getPrice())
@@ -71,19 +76,22 @@ public class MonteCarloSimulationExecutor {
                         .volatilityModel(asset.getVolatilityModel())
                         .timeHorizon(timeHorizon)
                         .build();
-
+                
             	return engine.simulate(numPaths, simulationRunner, context);
+            	
             	}
             )
             		);
+           
         }
-
+        
+        
         double[] finalPortfolioValues = new double[numPaths];
 
         for (int i = 0; i < numPaths; i++) {
             double total = 0.0;
             for (Future<double[]> future : futures) {
-                total += future.get()[i];
+					total += future.get()[i];
             }
             finalPortfolioValues[i] = total;
         }
@@ -91,6 +99,7 @@ public class MonteCarloSimulationExecutor {
         
         
         executor.shutdown();
+        
         return RiskMetricsCalculator.compute(finalPortfolioValues,confidenceLevel, portfolio.getTotalValuation());
     }
 }

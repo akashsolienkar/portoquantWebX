@@ -32,7 +32,7 @@ public class AssetServiceImpl implements AssetService  {
     public AssetResponse addAssetToPortfolio(UUID portfolioId, AssetRequest request) {
         Portfolio portfolio = getPortfolioOrThrow(portfolioId);
 
-        System.out.println("asset returned -aaa" );
+//        System.out.println("asset returned -aaa" );
         
         Asset asset = AssetFactory.createAssetFromRequest(request.getType().toString());
         AssetMapper.updateAssetFromRequest(asset, request);

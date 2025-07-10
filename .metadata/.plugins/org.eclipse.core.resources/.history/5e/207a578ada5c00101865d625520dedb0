@@ -1,0 +1,112 @@
+package com.quant.portoquant.domain.simulation.executors;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.domain.calculations.RiskMetricsCalculator;
+import com.quant.portoquant.domain.calculations.registry.ModelCalculatorRegistry;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.domain.model.Portfolio;
+import com.quant.portoquant.domain.model.SimulationResult;
+import com.quant.portoquant.domain.simulation.context.GBMSimulatorContext;
+import com.quant.portoquant.domain.simulation.engine.MultiMonteCarloSimulation;
+import com.quant.portoquant.domain.simulation.model.GBMSimulator;
+import com.quant.portoquant.domain.simulation.runner.SimulationRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+/**
+ * Executes Monte Carlo simulations for each asset in a portfolio.
+ * Uses GBM model and aggregates final portfolio values.
+ *
+ * @author akashsolienkar
+ */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+//@ConfigurationProperties( prefix = "monte-carlo-simulator")
+//@Data
+public class MonteCarloSimulationExecutor {
+
+    private SimulationRunner simulationRunner = new GBMSimulator();
+    private final MultiMonteCarloSimulation engine = new MultiMonteCarloSimulation();
+    private ExecutorService executor ;
+    private final ModelCalculatorRegistry modelCalculatorRegistry;
+
+    @Value("${monte-carlo-simulator.steps:252}")
+    private int steps;
+
+    @Value("${monte-carlo-simulator.confidenceLevel:0.95}")
+    private double confidenceLevel;
+
+    @Value("${monte-carlo-simulator.timeHorizon:1.0}")
+    private double timeHorizon;
+
+    /**
+     * Runs simulations for the given portfolio and calculates risk metrics.
+     * @return 
+     */
+    public SimulationResult runSimulations(Portfolio portfolio, int simulations) {
+        int numPaths = simulations;
+        executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        System.out.println("entered aaaaaa");
+        List<Future<double[]>> futures = new ArrayList<>();
+
+        try {
+        for (Asset asset : portfolio.getAssets()) {
+        	System.out.println("entered aaaaaa3");
+            futures.add(executor.submit(() ->
+            { 
+            	System.out.println("entered aaaaaa4");
+            	asset.setExpectedReturnModel(modelCalculatorRegistry.calculateExpectedReturn(asset));
+    			asset.setVolatilityModel(modelCalculatorRegistry.calculateVolatility(asset));
+    			System.out.println("entered aaaaaa5");
+                GBMSimulatorContext context = GBMSimulatorContext.builder()
+                        .steps(steps)
+                        .initialPrice(asset.getPrice())
+                        .expectedReturnModel(asset.getExpectedReturnModel())
+                        .volatilityModel(asset.getVolatilityModel())
+                        .timeHorizon(timeHorizon)
+                        .build();
+                System.out.println("entered aaaaaa6");
+            	return engine.simulate(numPaths, simulationRunner, context);
+            	
+            	}
+            )
+            		);
+            System.out.println("entered aaaaaa7");
+        }
+        }
+        catch(Exception e) {System.out.println(e);}
+        System.out.println("entered aaaaaa2");
+        double[] finalPortfolioValues = new double[numPaths];
+
+        for (int i = 0; i < numPaths; i++) {
+            double total = 0.0;
+            for (Future<double[]> future : futures) {
+                try {
+					total += future.get()[i];
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            finalPortfolioValues[i] = total;
+        }
+
+        
+        
+        executor.shutdown();
+        System.out.println(portfolio.getTotalValuation());
+        return RiskMetricsCalculator.compute(finalPortfolioValues,confidenceLevel, portfolio.getTotalValuation());
+    }
+}
