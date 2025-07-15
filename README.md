@@ -44,15 +44,20 @@ And generates a final pdf report for your portfolio
 
 # Architecture - Domain Driven
 ```
-|-----------------------------|
-|         API Layer    		          | ← Controllers, DTOs
-|-----------------------------|
-|     Application Layer       	  | ← Coordinates use cases
-|-----------------------------|
-|       Domain Layer                   | ← Core business logic, rules
-|-----------------------------|
-|     Infrastructure Layer           | ← DB, APIs, persistence
-|-----------------------------|
++-----------------------------+
+|        api/                |  --> Web layer (Controllers, DTOs, Mappers)
++-----------------------------+
+|        application/        |  --> Service layer (Interfaces, Implementations, Assemblers)
++-----------------------------+
+|        domain/             |  --> Core business logic, models, and strategy pattern logic
++-----------------------------+
+|        infrastructure/     |  --> Data access, integrations (DB, Redis, JWT, reports, schedulers)
++-----------------------------+
+|        config/             |  --> Configuration (Swagger, Security, Redis, Mapper)
++-----------------------------+
+|        resources/          |  --> Templates, static files, application.yml
++-----------------------------+
+
 ```
 
 # APIs Endpoints-
@@ -120,52 +125,53 @@ GET      /api/simulations/status                                     Check statu
 |----------------------------- |  application/      |
 |                              +--------------------+
 |                                      |
-|                  +------------------+------------------+
-|                  |                                     |
-|             service/                          service.impl/
-|                                                  |
-|                                          service.assembler/
+|         +-------------+-------------+-------------+-------------+
+|         |                                           |           |
+|    service/                                service.impl/   service.assembler/
 |
 |                              +--------------------+
 |----------------------------- |     domain/        |
 |                              +--------------------+
 |                                      |
-|   +------------+------------+--------------+---------------+--------------+
-|   |            |            |              |               |              |
-|model/     analytical/   calculations/   simulation/   garchmodel/   model.assets/
-|                                     | 
-|             +-----------+-----------+------------+-----------+
-|             |           |           |            |           |
-|         registry/  returnestimations/  volatilityestimations/  
-|                                              |
-|                            +--------+--------+--------+--------+
-|                            |        |        |        |
-|                        context/  engine/  runner/  executors/
+|  +--------+----------+---------+------------+------------+------------+
+|  |        |          |         |            |            |            |
+|model/ analytical/ calculations/ simulation/ garchmodel/ model.assets/
+|                                     |
+|         +----------+----------+----------+----------+
+|         |          |          |          |          |
+|   context/     engine/    runner/   executors/   model/
+|     |
+| +-------------------+
+| | returnestimations/|
+| | volatilityestimations/
+| | registry/
+| +-------------------+
 |
 |                              +------------------------+
 |----------------------------- |  infrastructure/       |
 |                              +------------------------+
 |                                      |
-|         +-------------+-------------+------------+--------------+
-|         |             |                          |              |
-|    repository/   historicaldata/             reports/       security/
-|                     |                          |               |
-|             +-------+-------+          +-------+-------+    +--+--+
-|             |       |       |          |       |       |    |     |
-|       datasources/ csv/ apiclients/ context/ executor/ models/  auth/
-|                                                               |  
-|                                                   +----------+----------+
-|                                                    |                     |
-|                                                charts/               jwt/, user/
+|      +---------+----------+----------+----------+-----------+----------+
+|      |         |                     |          |           |          |
+| repository/ historicaldata/      reports/    cache/     scheduler/  security/
+|              |                      |                       |         |
+|     +--------+--------+     +-------+-------+             +--+--+   +--------+
+|     |        |        |     |       |       |             |     |   |        |
+|  datasources/ csv/ apiclients/ context/ executor/       rediscache/ auth/ jwt/ user/
+|                          |
+|                      generator/ 
+|                      models/ 
+|                          |
+|                      charts/
 |
 |                              +---------------------+
-|----------------------------  |     config/         |
+|----------------------------- |     config/         |
 |                              +---------------------+
 |                                      |
-|                    SwaggerConfig/, SecurityConfig/, ModelMapperConfig/
+|                    SwaggerConfig/, SecurityConfig/, RedisConfig/
 |
 |                               +---------------------+
-|                               |    resources/       |
+|-----------------------------  |    resources/       |
 |                               +---------------------+
 |                                       |
 |                       +---------------+---------------+
@@ -173,7 +179,6 @@ GET      /api/simulations/status                                     Check statu
 |                 templates/                        static/
 |                       |
 |            reports/portfolio-report.html
-|
 
 ```
 # Full Folder Structure
@@ -183,6 +188,7 @@ portoquant/
     └── main/
         ├── java/
         │   └── com/quant/portoquant/
+        │       ├── PortoquantApplication.java
         │       ├── api/
         │       │   ├── controller/
         │       │   │   ├── AssetController.java
@@ -190,7 +196,8 @@ portoquant/
         │       │   │   ├── HealthController.java
         │       │   │   ├── PortfolioController.java
         │       │   │   ├── ReportController.java
-        │       │   │   └── SimulationController.java
+        │       │   │   ├── SimulationController.java
+        │       │   │   └── UserController.java
         │       │   ├── dto/
         │       │   │   ├── AssetRequest.java
         │       │   │   ├── AssetResponse.java
@@ -213,60 +220,159 @@ portoquant/
         │       ├── application/
         │       │   ├── service/
         │       │   │   ├── AssetService.java
+        │       │   │   ├── HistoricalDataLoaderService.java
         │       │   │   ├── PortfolioService.java
+        │       │   │   ├── RedisCacheService.java
         │       │   │   ├── ReportService.java
-        │       │   │   └── SimulationService.java
+        │       │   │   ├── SimulationService.java
+        │       │   │   ├── TickerCacheManager.java
+        │       │   │   └── UserService.java
         │       │   ├── service/impl/
         │       │   │   ├── AssetServiceImpl.java
+        │       │   │   ├── HistoricalDataLoaderServiceImpl.java
         │       │   │   ├── PortfolioServiceImpl.java
+        │       │   │   ├── RedisCacheServiceImpl.java
         │       │   │   ├── ReportServiceImpl.java
-        │       │   │   └── SimulationServiceImpl.java
+        │       │   │   ├── SimulationServiceImpl.java
+        │       │   │   ├── TickerCacheManagerImpl.java
+        │       │   │   └── UserServiceImpl.java
         │       │   └── service/assembler/
         │       │       └── PortfolioReportAssembler.java
         │       ├── config/
         │       │   ├── ModelMapperConfig.java
+        │       │   ├── RedisConfig.java
         │       │   ├── SecurityConfig.java
         │       │   └── SwaggerConfig.java
         │       ├── domain/
         │       │   ├── analytical/
+        │       │   │   ├── ConstantExpectedReturnModel.java
+        │       │   │   ├── ConstantVolatilityModel.java
+        │       │   │   ├── ExpectedReturnModel.java
+        │       │   │   ├── TimeVaryingExpectedReturnModel.java
+        │       │   │   ├── TimeVaryingVolatility.java
+        │       │   │   └── VolatilityModel.java
         │       │   ├── calculations/
+        │       │   │   ├── PortfolioAnalyticsUtil.java
+        │       │   │   ├── RiskMetricsCalculator.java
         │       │   ├── calculations/registry/
+        │       │   │   └── ModelCalculatorRegistry.java
         │       │   ├── calculations/returnestimations/
+        │       │   │   ├── BondExpectedReturnCalculator.java
+        │       │   │   ├── CashExpectedReturnCalculator.java
+        │       │   │   ├── CommoditiyReturnCalculator.java
+        │       │   │   ├── CryptoExpectedReturnCalculator.java
+        │       │   │   ├── ExpectedReturnCalculator.java
+        │       │   │   ├── MutualFundReturnCalculator.java
+        │       │   │   ├── RealEstateExpectedReturnCalculator.java
+        │       │   │   └── StockExpectedReturnCalculator.java
         │       │   ├── calculations/volatilityestimations/
+        │       │   │   ├── BondVolatilityCalculator.java
+        │       │   │   ├── CashVolatilityCalculator.java
+        │       │   │   ├── CommodityVolatilityCalculator.java
+        │       │   │   ├── CryptoVolatilityCalculator.java
+        │       │   │   ├── MutualFundVolatilityCalculator.java
+        │       │   │   ├── RealEstateVolatilityCalculator.java
+        │       │   │   ├── StockVolatilityCalculator.java
+        │       │   │   └── VolatilityCalculator.java
         │       │   ├── garchmodel/
+        │       │   │   └── GarchModel.java
         │       │   ├── model/
+        │       │   │   ├── Asset.java
+        │       │   │   ├── Portfolio.java
+        │       │   │   ├── SimulationResult.java
+        │       │   │   └── User.java
         │       │   ├── model/assets/
+        │       │   │   ├── AssetFactory.java
+        │       │   │   ├── Bond.java
+        │       │   │   ├── Cash.java
+        │       │   │   ├── Commodity.java
+        │       │   │   ├── Crypto.java
+        │       │   │   ├── MutualFund.java
+        │       │   │   ├── RealEstate.java
+        │       │   │   └── Stock.java
         │       │   ├── model/enums/
-        │       │   └── simulation/
-        │       │       ├── context/
-        │       │       ├── engine/
-        │       │       ├── executors/
-        │       │       ├── model/
-        │       │       └── runner/
+        │       │   │   ├── AssetType.java
+        │       │   │   ├── SimulationStatus.java
+        │       │   │   └── UserRole.java
+        │       │   ├── simulation/context/
+        │       │   │   ├── GBMSimulatorContext.java
+        │       │   │   └── SimulationContext.java
+        │       │   ├── simulation/engine/
+        │       │   │   └── MultiMonteCarloSimulation.java
+        │       │   ├── simulation/executors/
+        │       │   │   └── MonteCarloSimulationExecutor.java
+        │       │   ├── simulation/model/
+        │       │   │   └── GBMSimulator.java
+        │       │   └── simulation/runner/
+        │       │       └── SimulationRunner.java
         │       ├── infrastructure/
+        │       │   ├── cache/rediscache/
+        │       │   │   ├── RedisEvictionPolicyManager.java
+        │       │   │   └── RedisTickerCacheLoader.java
         │       │   ├── exception/
+        │       │   │   ├── ApiError.java
+        │       │   │   ├── BadRequestException.java
+        │       │   │   ├── GlobalExceptionHandler.java
+        │       │   │   ├── ResourceNotFoundException.java
+        │       │   │   └── VintageApiException.java
         │       │   ├── historicaldata/
-        │       │   │   ├── datasources/
-        │       │   │   │   ├── apiclients/
-        │       │   │   │   ├── csv/
-        │       │   │   │   └── parsers/
-        │       │   │   └── provider/
-        │       │   ├── reports/
-        │       │   │   ├── context/
-        │       │   │   ├── executor/
-        │       │   │   ├── generator/
-        │       │   │   └── models/
-        │       │   │       └── charts/
+        │       │   │   ├── datasources/apiclients/
+        │       │   │   │   └── VintageStockClient.java
+        │       │   │   ├── datasources/csv/
+        │       │   │   ├── datasources/parsers/
+        │       │   │   ├── models/
+        │       │   │   │   ├── HistoricalDataMeta.java
+        │       │   │   │   └── HistoricalPrice.java
+        │       │   │   ├── provider/
+        │       │   │   │   ├── HistoricalDataProvider.java
+        │       │   │   │   ├── HistoricalDataSourceRegistry.java
+        │       │   │   │   └── StockApiDataProvider.java
+        │       │   │   └── rolling/
+        │       │   │       └── RollingWindowManager.java
+        │       │   ├── models/
+        │       │   ├── reports/context/
+        │       │   │   ├── PortfolioReportContextBuilder.java
+        │       │   │   └── ReportContextBuilder.java
+        │       │   ├── reports/executor/
+        │       │   │   ├── PortfolioReportExecutor.java
+        │       │   │   └── ReportExecutor.java
+        │       │   ├── reports/generator/
+        │       │   │   ├── ChartRenderer.java
+        │       │   │   └── PdfReportGenerator.java
+        │       │   ├── reports/models/
+        │       │   │   ├── AssetSummary.java
+        │       │   │   ├── PortfolioReportData.java
+        │       │   │   └── SimulationSummary.java
+        │       │   ├── reports/models/charts/
+        │       │   │   ├── AssetDistributionChart.java
+        │       │   │   └── PieChart.java
         │       │   ├── repository/
+        │       │   │   ├── AssetRepository.java
+        │       │   │   ├── HistoricalDataMetaRepository.java
+        │       │   │   ├── HistoricalPriceRepository.java
+        │       │   │   ├── PortfolioRepository.java
+        │       │   │   ├── SimulationResultRepository.java
+        │       │   │   └── UserRepository.java
+        │       │   ├── scheduler/
+        │       │   │   ├── HistoricalDataSyncScheduler.java
+        │       │   │   └── RedisFrequencySyncScheduler.java
         │       │   └── security/
         │       │       ├── auth/
+        │       │       │   ├── AuthService.java
+        │       │       │   └── AuthServiceImpl.java
         │       │       ├── jwt/
+        │       │       │   ├── JwtAuthenticationFilter.java
+        │       │       │   ├── JwtService.java
+        │       │       │   └── JwtServiceImpl.java
         │       │       └── user/
-        ├── resources/
-        │   ├── application.yml
-        │   ├── static/
-        │   └── templates/
-        │       └── reports/
-        │           └── portfolio-report.html
+        │       │           ├── AuthUserDetails.java
+        │       │           └── AuthUserDetailService.java
+        └── resources/
+            ├── application.yml
+            ├── application.properties
+            ├── static/
+            └── templates/
+                └── reports/
+                    └── portfolio-report.html
 
 ```
