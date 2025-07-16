@@ -46,7 +46,7 @@ You can do this every few minutes/hours/day based on system usage.
 
 **Comparison with Standard LFU**
 ```
-Feature	                      My Custom Plan	                               Traditional LFU Cache
+Feature	                      My Custom Plan	                              Traditional LFU Cache
 
 🔁 Persistent frequency count ✅ Stored in DB                               ❌ Only in memory
 ♻️ Warm start on app restart  ✅ Preload top-N from DB                      ❌ Cold start every time
