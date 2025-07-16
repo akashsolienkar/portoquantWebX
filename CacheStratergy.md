@@ -52,7 +52,7 @@ Feature	                     Your Custom Plan	                              Trad
 ⚙️ Cache frequency control   	✅ Configurable sync to DB	                  ❌ No concept of sync
 💾 Eviction handling	        ✅ Evict LFU + persist frequency	            ✅ Evict LFU (no tracking)
 💡 Domain-awareness         	✅ Based on Asset, Ticker, HistoricalPrice	  ❌ Generic key-value
-🔍 Miss strategy         	    ✅ Fallback to DB → API → Save to DB + Redis	❌ No fallback (miss = null)
+🔍 Miss strategy              ✅ Fallback to DB → API → Save to DB + Redis	❌ No fallback (miss = null)
 🧠 Intelligent eviction	      ✅ Compare frequency of new vs old	          ❌ Blind LFU count
 ```
 
