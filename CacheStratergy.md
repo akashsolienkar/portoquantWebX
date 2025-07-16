@@ -1,4 +1,4 @@
-#Custom LFU Cache Stratergy
+# Custom LFU Cache Stratergy
 
 **Stratergy**
 ```
