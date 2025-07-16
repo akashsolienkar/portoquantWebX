@@ -58,6 +58,7 @@ Feature	                      My Custom Plan	                              Tradi
 ```
 
 **PROS**
+```
 Keeps your Redis cache high-quality.
 🧠 Smart cache population: Keeps hot tickers in Redis.
 🧠 Smarter Over Time:	Retains access patterns. Previous usage history makes Redis cache intelligent
@@ -67,3 +68,4 @@ Keeps your Redis cache high-quality.
 📊 Hit-rate optimized: High-frequency access, fewer cold loads.
 🎯 Aligned with Demand: Redis contains most-accessed assets used daily.
 ❄️ Avoids Cold Starts: On startup, Redis is preloaded with the top N tickers from the DB, maintaining performance continuity.
+```
