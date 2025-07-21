@@ -1,0 +1,24 @@
+package com.quant.portoquant.application.service;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalPrice;
+
+public interface RedisCacheService {
+
+	public static final int MAX_CACHE_SIZE = 100; // configurable
+	
+    void cacheTicker(String key, List<HistoricalPrice> value, int frequency);
+    List<HistoricalPrice> getCachedTicker(String key);
+    void incrementFrequency(String key);
+    int getFrequency(String key);
+    Map<String, Integer> getAllFrequencies();
+    void evict(String key);
+    boolean isFull();
+    String getLeastFrequentKey();
+    List<String> getAllKeys();
+	void flushAll();
+}

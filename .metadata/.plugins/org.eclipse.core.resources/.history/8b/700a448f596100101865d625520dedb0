@@ -1,0 +1,19 @@
+package com.quant.portoquant.application.service;
+
+
+
+import java.util.List;
+import java.util.Map;
+
+public interface RedisCacheService {
+
+    <T> void cacheTicker(String key, T value, int frequency);
+    <T> T getCachedTicker(String key, Class<T> clazz);
+    void incrementFrequency(String key);
+    int getFrequency(String key);
+    Map<String, Integer> getAllFrequencies();
+    void evict(String key);
+    boolean isFull();
+    String getLeastFrequentKey();
+    List<String> getAllKeys();
+}

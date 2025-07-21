@@ -1,0 +1,99 @@
+package com.quant.portoquant.application.service.impl;
+
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quant.portoquant.application.service.RedisCacheService;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.*;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+
+@Service
+@RequiredArgsConstructor
+public class RedisCacheServiceImpl implements RedisCacheService {
+
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper;
+
+    private static final String DATA_KEY_PREFIX = "ticker:data:";
+    private static final String SCORE_KEY = "ticker:score";
+    public static final int MAX_CACHE_SIZE = 100; // configurable
+
+    @PostConstruct
+    public void init() {
+        // Can preload or warmup cache here if needed
+    }
+
+    @Override
+    public <T> void cacheTicker(String key, T value, int frequency) {
+        try {
+            String json = objectMapper.writeValueAsString(value);
+            redisTemplate.opsForValue().set(DATA_KEY_PREFIX + key, json);
+            redisTemplate.opsForZSet().add(SCORE_KEY, key, frequency);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to cache ticker", e);
+        }
+    }
+
+    @Override
+    public <T> T getCachedTicker(String key, Class<T> clazz) {
+        try {
+            String json = redisTemplate.opsForValue().get(DATA_KEY_PREFIX + key);
+            return json != null ? objectMapper.readValue(json, clazz) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void incrementFrequency(String key) {
+        redisTemplate.opsForZSet().incrementScore(SCORE_KEY, key, 1);
+    }
+
+    @Override
+    public int getFrequency(String key) {
+        Double score = redisTemplate.opsForZSet().score(SCORE_KEY, key);
+        return score != null ? score.intValue() : 0;
+    }
+
+    @Override
+    public Map<String, Integer> getAllFrequencies() {
+        Set<ZSetOperations.TypedTuple<String>> tuples = redisTemplate.opsForZSet().rangeWithScores(SCORE_KEY, 0, -1);
+        Map<String, Integer> freqMap = new HashMap<>();
+        if (tuples != null) {
+            for (ZSetOperations.TypedTuple<String> tuple : tuples) {
+                freqMap.put(tuple.getValue(), tuple.getScore().intValue());
+            }
+        }
+        return freqMap;
+    }
+
+    @Override
+    public void evict(String key) {
+        redisTemplate.delete(DATA_KEY_PREFIX + key);
+        redisTemplate.opsForZSet().remove(SCORE_KEY, key);
+    }
+
+    @Override
+    public boolean isFull() {
+        Long size = redisTemplate.opsForZSet().zCard(SCORE_KEY);
+        return size != null && size >= MAX_CACHE_SIZE;
+    }
+
+    @Override
+    public String getLeastFrequentKey() {
+        Set<String> least = redisTemplate.opsForZSet().range(SCORE_KEY, 0, 0);
+        return (least != null && !least.isEmpty()) ? least.iterator().next() : null;
+    }
+
+    @Override
+    public List<String> getAllKeys() {
+        Set<String> keys = redisTemplate.opsForZSet().range(SCORE_KEY, 0, -1);
+        return keys == null ? List.of() : new ArrayList<>(keys);
+    }
+}

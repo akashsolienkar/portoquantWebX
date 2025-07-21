@@ -1,0 +1,26 @@
+package com.quant.portoquant.infrastructure.cache.rediscache;
+
+
+
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.application.service.TickerCacheManager;
+
+@Component
+@RequiredArgsConstructor
+public class RedisTickerCacheLoader {
+
+    private final TickerCacheManager tickerCacheManager;
+
+    /**
+     * Load high-frequency tickers from DB to Redis on app startup.
+     */
+    @PostConstruct
+    public void loadOnStartup() {
+        tickerCacheManager.preloadTopTickersFromDB();
+    }
+    
+}

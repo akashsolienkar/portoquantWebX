@@ -1,0 +1,28 @@
+package com.quant.portoquant.infrastructure.scheduler;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.application.service.TickerCacheManager;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class RedisFrequencySyncScheduler {
+
+    private final TickerCacheManager tickerCacheManager;
+
+    /**
+     * This method will be triggered at the time configured in application.yml (default: 6:30 AM daily).
+     */
+    @Scheduled(cron = "${spring.redis.scheduler.frequency-sync-cron}")
+    public void syncFrequenciesFromRedisToDB() {
+        log.info("Starting Redis frequency sync to DB at scheduled time.");
+        tickerCacheManager.syncFreqFromRedisToDB();
+        tickerCacheManager.preloadTopTickersFromDB();
+        log.info("Redis frequency sync completed successfully.");
+    }
+}

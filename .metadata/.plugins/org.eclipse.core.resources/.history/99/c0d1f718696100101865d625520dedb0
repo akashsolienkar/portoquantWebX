@@ -1,0 +1,36 @@
+package com.quant.portoquant.infrastructure.cache.rediscache;
+
+
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.application.service.RedisCacheService;
+import com.quant.portoquant.application.service.TickerCacheManager;
+
+@Component
+@RequiredArgsConstructor
+public class RedisEvictionPolicyManager {
+
+    private final RedisCacheService redisCacheService;
+    private final TickerCacheManager tickerCacheManager;
+
+    /**
+     * Evicts the least frequent ticker if incoming frequency justifies replacement.
+     */
+    public void evictIfNeeded(int incomingFrequency) {
+        if (!redisCacheService.isFull()) return;
+
+        String leastKey = redisCacheService.getLeastFrequentKey();
+        if (leastKey == null) return;
+
+        int leastFreq = redisCacheService.getFrequency(leastKey);
+
+        if (incomingFrequency > leastFreq) {
+            // Save evicted frequency to DB
+            tickerCacheManager.saveFrequencyToDB(leastKey, leastFreq);
+            redisCacheService.evict(leastKey);
+        }
+    }
+}

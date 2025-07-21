@@ -32,6 +32,7 @@ public class StockApiDataProvider implements HistoricalDataProvider {
          throw new RuntimeException("Invalid response from Vintage API");
      }
      
+     
 //     List<Double> closingPrices = new ArrayList<>();
 //     for (int i = 0; i < Math.min(257, dates.size()); i++) {
 //         String date = dates.get(i);

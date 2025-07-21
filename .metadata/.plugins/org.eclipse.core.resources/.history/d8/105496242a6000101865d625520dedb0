@@ -1,0 +1,12 @@
+package com.quant.portoquant.application.service;
+
+
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalPrice;
+
+public interface HistoricalDataLoaderService {
+
+    void runRollingUpdateForExistingTickers();
+
+    HistoricalPrice ensureTickerPresentOrInsert(Asset asset);
+}

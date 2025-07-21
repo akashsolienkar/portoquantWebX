@@ -1,0 +1,9 @@
+package com.quant.portoquant.infrastructure.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface HistoricalDataFrequency extends JpaRepository<HistoricalDataFrequency, UUID> {
+    Optional<HistoricalDataFrequency> findByNameAndAssetType(String name, AssetType type);
+}

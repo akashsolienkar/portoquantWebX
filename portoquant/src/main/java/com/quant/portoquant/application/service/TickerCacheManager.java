@@ -1,0 +1,21 @@
+package com.quant.portoquant.application.service;
+
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalDataMeta;
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalPrice;
+
+import java.util.List;
+
+public interface TickerCacheManager {
+
+    List<HistoricalPrice> getTickerPrices(String ticker);
+
+    void preloadTopTickersFromDB();
+
+    void loadToCache(HistoricalDataMeta meta, List<HistoricalPrice> prices, int frequency);
+
+	void clearCache();
+	
+	void syncFreqFromRedisToDB();
+
+//    void saveFrequencyToDB(String ticker, int frequency);
+}

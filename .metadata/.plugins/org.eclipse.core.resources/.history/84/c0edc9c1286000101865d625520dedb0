@@ -1,0 +1,45 @@
+package com.quant.portoquant.infrastructure.historicaldata.scheduler;
+
+import com.quant.portoquant.application.service.HistoricalDataLoaderService;
+import com.quant.portoquant.domain.model.Asset;
+import com.quant.portoquant.infrastructure.repository.AssetRepository;
+
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class HistoricalDataSyncScheduler {
+
+    private final AssetRepository assetRepository;
+    private final HistoricalDataLoaderService loaderService;
+
+    /**
+     * Runs every weekday at 5:30 PM IST (after market close).
+     * Cron format: second, minute, hour, day of month, month, day of week
+     */
+    @Scheduled(cron = "0 30 17 * * MON-FRI", zone = "Asia/Kolkata")
+    public void syncAllHistoricalPrices() {
+        log.info("⏳ Starting daily historical data sync job...");
+
+        List<Asset> allAssets = assetRepository.findAll();
+
+        for (Asset asset : allAssets) {
+            try {
+                loaderService.runRollingUpdateForExistingTickers();
+                log.info("✅ Synced data for asset: {}", asset.getTicker());
+            } catch (Exception e) {
+                log.error("❌ Failed to sync data for asset: {}", asset.getTicker(), e);
+            }
+        }
+
+        log.info("✅ Historical data sync job completed.");
+    }
+}

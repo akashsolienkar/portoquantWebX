@@ -13,6 +13,6 @@ public class TimeVaryingExpectedReturnModel implements ExpectedReturnModel {
 
     @Override
     public double getExpectedReturn(int time) {
-        return time>=expectedReturn.size()?expectedReturn.get(expectedReturn.size()): expectedReturn.get(time);
+        return time>=expectedReturn.size()?expectedReturn.get(expectedReturn.size()-1): expectedReturn.get(time);
     }
 }

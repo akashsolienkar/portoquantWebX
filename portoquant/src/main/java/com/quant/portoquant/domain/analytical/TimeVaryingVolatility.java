@@ -12,6 +12,6 @@ public class TimeVaryingVolatility implements VolatilityModel {
 
     @Override
     public double getVolatility(int time) {
-        return time>=volatility.size()?volatility.get(volatility.size()): volatility.get(time);
+        return time>=volatility.size()?volatility.get(volatility.size()-1): volatility.get(time);
     }
 }

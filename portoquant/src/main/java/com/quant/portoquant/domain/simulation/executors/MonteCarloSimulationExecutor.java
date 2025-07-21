@@ -54,7 +54,8 @@ public class MonteCarloSimulationExecutor {
      * @throws ExecutionException 
      * @throws InterruptedException 
      */
-    public SimulationResult runSimulations(Portfolio portfolio, int simulations) throws InterruptedException, ExecutionException {
+    public SimulationResult runSimulations(Portfolio portfolio, int simulations)  throws InterruptedException, ExecutionException
+    {
         int numPaths = simulations;
         executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         
@@ -91,7 +92,15 @@ public class MonteCarloSimulationExecutor {
         for (int i = 0; i < numPaths; i++) {
             double total = 0.0;
             for (Future<double[]> future : futures) {
-					total += future.get()[i];
+					try {
+						total += future.get()[i];
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
             }
             finalPortfolioValues[i] = total;
         }

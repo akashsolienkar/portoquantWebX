@@ -1,0 +1,46 @@
+package com.quant.portoquant.infrastructure.repository;
+
+
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.quant.portoquant.domain.model.enums.AssetType;
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalDataMeta;
+
+import jakarta.transaction.Transactional;
+
+@Repository
+public interface HistoricalDataMetaRepository extends JpaRepository<HistoricalDataMeta, UUID> {
+    HistoricalDataMeta findByNameAndAssetType(String name, AssetType type);
+    HistoricalDataMeta findByName(String name);
+    
+    @EntityGraph(value = "HistoricalDataMeta.withPrices", type = EntityGraph.EntityGraphType.LOAD)
+    @Query("SELECT m FROM HistoricalDataMeta m ORDER BY m.frequency DESC")
+    List<HistoricalDataMeta> findTopNTickersByFrequency(Pageable pageable);
+    
+    
+    @Modifying
+    @Transactional
+    @Query(value = """
+        WITH RankedFrequencies AS (
+            SELECT
+                id,
+                DENSE_RANK() OVER (ORDER BY frequency DESC) AS new_frequency
+            FROM
+                historical_data_meta
+        )
+        UPDATE historical_data_meta
+        SET frequency = RankedFrequencies.new_frequency
+        FROM RankedFrequencies
+        WHERE historical_data_meta.id = RankedFrequencies.id
+        """, nativeQuery = true)
+    void overwriteFrequenciesWithRank();
+}

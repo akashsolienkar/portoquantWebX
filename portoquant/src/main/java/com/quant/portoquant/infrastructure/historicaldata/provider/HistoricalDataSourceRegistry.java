@@ -1,0 +1,35 @@
+package com.quant.portoquant.infrastructure.historicaldata.provider;
+
+import java.util.EnumMap;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.quant.portoquant.domain.model.enums.AssetType;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class HistoricalDataSourceRegistry {
+
+    private final StockApiDataProvider stockApiDataProvider;
+    // Add more providers like BondApiDataProvider, etc. if needed
+
+    private final Map<AssetType, HistoricalDataProvider> registry = new EnumMap<>(AssetType.class);
+
+    @PostConstruct
+    public void registerAll() {
+        registry.put(AssetType.STOCK, stockApiDataProvider);
+        // registry.put(AssetType.BOND, bondApiDataProvider); etc.
+    }
+
+    public HistoricalDataProvider getProvider(AssetType type) {
+        HistoricalDataProvider provider = registry.get(type);
+        if (provider == null) {
+            throw new UnsupportedOperationException("No provider for asset type: " + type);
+        }
+        return provider;
+    }
+}

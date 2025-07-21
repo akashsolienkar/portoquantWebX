@@ -1,0 +1,23 @@
+package com.quant.portoquant.infrastructure.models;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "historical_prices",
+       indexes = @Index(name = "idx_asset_date", columnList = "asset_id, trading_date"))
+public class HistoricalPrice {
+
+    @Id
+    @GeneratedValue
+    private Long id;  // Even if internal only
+
+    @ManyToOne
+    @JoinColumn(name = "asset_id", nullable = false)
+    private Asset asset;
+
+    private LocalDate tradingDate;  // Use date instead of int day
+
+    private int tradingDay;   // Optional: 1–257 index
+    private double price;
+}

@@ -1,0 +1,36 @@
+package com.quant.portoquant.infrastructure.models;
+
+import java.util.UUID;
+
+import com.quant.portoquant.domain.model.Asset;
+
+import jakarta.persistence.Entity;
+
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "historical_prices")
+//       ,indexes = @Index(name = "idx_asset_date", columnList = "asset_id, trading_date"))
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class HistoricalPrice {
+
+    @Id
+    private UUID id;  // Even if internal only
+
+    @ManyToOne
+    @JoinColumn(name = "asset_id", nullable = false)
+    private Asset asset;
+
+//    private LocalDate tradingDate;  // Use date instead of int day
+
+    private int tradingDay;   // Optional: 1–257 index
+    private double price;
+}

@@ -1,0 +1,37 @@
+package com.quant.portoquant.infrastructure.repository;
+
+
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalDataMeta;
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalPrice;
+
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface HistoricalPriceRepository extends JpaRepository<HistoricalPrice, UUID> {
+
+    List<HistoricalPrice> findByMetaDataOrderByTradingIndex(HistoricalDataMeta asset);
+
+    @Modifying
+    @Query("DELETE FROM HistoricalPrice p WHERE p.metaData.id = :metaDataId")
+    void deleteByMetaDataId(@Param("metaDataId") UUID metaDataId);
+
+    @Modifying
+    @Query("DELETE FROM HistoricalPrice p WHERE p.metaData.id = :metaDataId AND p.tradingIndex = 1")
+    void deleteOldest(@Param("metaDataId") UUID metaDataId);
+
+    @Modifying
+    @Query("UPDATE HistoricalPrice p SET p.tradingIndex = p.tradingIndex - 1 " +
+           "WHERE p.metaData.id = :metaDataId AND p.tradingIndex > 1")
+    void shiftIndices(@Param("metaDataId") UUID metaDataId);
+    
+    @Query("SELECT p FROM HistoricalPrice p WHERE p.metaData.id = :metaDataId ORDER BY p.tradingIndex DESC")
+    List<HistoricalPrice> findTopNByMetaDataOrderByTradingIndexDesc(@Param("metaDataId") UUID metaDataId, Pageable pageable);
+
+}

@@ -1,0 +1,16 @@
+package com.quant.portoquant.infrastructure.repository;
+
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.quant.portoquant.domain.model.enums.AssetType;
+import com.quant.portoquant.infrastructure.historicaldata.models.HistoricalDataMeta;
+
+@Repository
+public interface HistoricalDataFrequencyRepository extends JpaRepository<HistoricalDataMeta, UUID> {
+    HistoricalDataMeta findByNameAndAssetType(String name, AssetType type);
+    HistoricalDataMeta findByName(String name);
+}

@@ -1,0 +1,8 @@
+package com.quant.portoquant.infrastructure.repository;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface HistoricalAssetMetadataRepository extends JpaRepository<HistoricalAssetMetadata, UUID> {
+    Optional<HistoricalAssetMetadata> findByNameAndAssetType(String name, AssetType type);
+}
