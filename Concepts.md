@@ -1,6 +1,7 @@
-#Concept#
+# Concept
 
 **Monte Carlo Simulation concept**
+
 Monte Carlo methods are a broad class of computational algorithms that rely on repeated random sampling to obtain numerical results.
 We run a simulation using random variables thousands or millions of times and then calculate the average value as the expected value.
 It works well when do not have a defintive way or formula to calculate a value but can trigger a pool of values ad select the best fitting values using a relation.
