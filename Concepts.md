@@ -21,5 +21,10 @@ The more darts you throw, the closer this estimate gets to the real value — th
 if this was a unit circle then the area of the circle would be pie.
 
 
+**GBM Formula**
+
+<img width="810" height="320" alt="image" src="https://github.com/user-attachments/assets/78f3591b-64fb-4f9d-bb9c-f81ce3ffb7a8" />
+
+
 
 
