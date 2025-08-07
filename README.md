@@ -40,7 +40,7 @@ And generates a final pdf report for your portfolio
 - **UI** - CSS / HTML /Thymleaf 
 - **Security** - JWT Token based
 - **Other** - lombok
-  **Common Design Patterns** - Strategy, Factory, Builder, Template Method, Adapter, Singleton, and Mapper
+  **Common Design Patterns** - Strategy, Factory, Builder, Template Method, Adapter, Singleton, facade and Mapper
 
 # Architecture - Domain Driven
 ```
